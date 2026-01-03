@@ -1,0 +1,31 @@
+alert_id,timestamp,alert_type,level,title,message,status,latitude,longitude,location_name,actions_required,priority_score
+ALT-001,2026-01-01T14:35:58.284398,Ship Emergency,Medium,Ship Emergency - Cargo Voyager,Vessel showing anomalous behavior. Immediate response required.,acknowledged,45.95721,-27.102618,River Delta,4,3
+ALT-002,2026-01-01T16:35:58.284398,Flood,High,Flood Risk Alert - Station C,Flood risk 72%. Expected flooding in 7 hours.,acknowledged,50.379372,-87.686139,Coastal Point,3,2
+ALT-003,2026-01-01T18:35:58.284398,Oil Spill,Medium,Oil Spill Detected,Spill detected affecting 0.5 km². Deploy containment team.,active,28.852084,-25.298453,River Delta,1,3
+ALT-004,2026-01-01T20:35:58.284398,Oil Spill,High,Oil Spill Detected,Spill detected affecting 1.9 km². Deploy containment team.,active,36.318076,-37.2336,Coastal Point,3,2
+ALT-005,2026-01-01T22:35:58.284398,Ship Emergency,Critical,Ship Emergency - Pacific Container,Vessel showing anomalous behavior. Immediate response required.,active,25.721415,-93.386866,River Delta,2,1
+ALT-006,2026-01-02T00:35:58.284398,Oil Spill,Low,Chemical Spill Detected,Spill detected affecting 0.7 km². Deploy containment team.,active,36.214917,44.039901,Industrial Port,3,4
+ALT-007,2026-01-02T02:35:58.284398,Flood,Critical,Flood Risk Alert - Station A,Flood risk 94%. Expected flooding in 4 hours.,acknowledged,45.148527,15.625035,Harbor Entrance,3,1
+ALT-008,2026-01-02T04:35:58.284398,Oil Spill,Low,Oil Spill Detected,Spill detected affecting 1.9 km². Deploy containment team.,acknowledged,52.102603,-62.58639,Coastal Point,2,4
+ALT-009,2026-01-02T06:35:58.284398,Oil Spill,Low,Chemical Spill Detected,Spill detected affecting 1.8 km². Deploy containment team.,active,54.381642,-33.425129,Industrial Port,2,4
+ALT-010,2026-01-02T08:35:58.284398,Ship Emergency,High,Ship Emergency - Ocean Tanker,Vessel showing anomalous behavior. Immediate response required.,active,35.949937,36.909661,Harbor Entrance,5,2
+ALT-011,2026-01-02T10:35:58.284398,Flood,Low,Flood Risk Alert - Station B,Flood risk 83%. Expected flooding in 5 hours.,active,47.80022,-85.416422,River Delta,3,4
+ALT-012,2026-01-02T12:35:58.284398,Oil Spill,Critical,Oil Spill Detected,Spill detected affecting 2.5 km². Deploy containment team.,acknowledged,35.668467,7.189849,Harbor Entrance,3,1
+ALT-013,2026-01-02T14:35:58.284398,Flood,Critical,Flood Risk Alert - Station C,Flood risk 65%. Expected flooding in 6 hours.,acknowledged,47.508616,34.326546,Coastal Point,4,1
+ALT-014,2026-01-02T16:35:58.284398,Ship Emergency,Critical,Ship Emergency - Pacific Container,Vessel showing anomalous behavior. Immediate response required.,acknowledged,25.732236,3.084715,Harbor Entrance,4,1
+ALT-015,2026-01-02T18:35:58.284398,Ship Emergency,High,Ship Emergency - Pacific Container,Vessel showing anomalous behavior. Immediate response required.,acknowledged,34.856542,-27.375991,Harbor Entrance,5,2
+ALT-016,2026-01-02T20:35:58.284398,Flood,Low,Flood Risk Alert - Station C,Flood risk 71%. Expected flooding in 3 hours.,active,27.545519,-109.949459,Industrial Port,3,4
+ALT-017,2026-01-02T22:35:58.284398,Flood,High,Flood Risk Alert - Station B,Flood risk 93%. Expected flooding in 12 hours.,acknowledged,33.736587,6.902239,Harbor Entrance,1,2
+ALT-018,2026-01-03T00:35:58.284398,Flood,Critical,Flood Risk Alert - Station C,Flood risk 64%. Expected flooding in 4 hours.,acknowledged,34.662238,-89.892894,River Delta,5,1
+ALT-019,2026-01-03T02:35:58.284398,Ship Emergency,Critical,Ship Emergency - Cargo Voyager,Vessel showing anomalous behavior. Immediate response required.,active,52.700669,-59.752858,Harbor Entrance,4,1
+ALT-020,2026-01-03T04:35:58.284398,Ship Emergency,Critical,Ship Emergency - Cargo Voyager,Vessel showing anomalous behavior. Immediate response required.,acknowledged,44.19828,-12.755929,Coastal Point,2,1
+ALT-021,2026-01-03T06:35:58.284398,Flood,High,Flood Risk Alert - Station C,Flood risk 86%. Expected flooding in 10 hours.,acknowledged,26.37162,33.88994,Industrial Port,1,2
+ALT-022,2026-01-03T08:35:58.284398,Oil Spill,Medium,Oil Spill Detected,Spill detected affecting 2.6 km². Deploy containment team.,acknowledged,37.350187,38.641616,River Delta,2,3
+ALT-023,2026-01-03T10:35:58.284398,Oil Spill,Low,Chemical Spill Detected,Spill detected affecting 0.7 km². Deploy containment team.,acknowledged,54.159765,-99.69409,Industrial Port,3,4
+ALT-024,2026-01-03T12:35:58.284398,Oil Spill,Critical,Oil Spill Detected,Spill detected affecting 0.6 km². Deploy containment team.,active,35.926556,-128.681097,Coastal Point,5,1
+ALT-025,2026-01-03T14:35:58.284398,Flood,Low,Flood Risk Alert - Station A,Flood risk 81%. Expected flooding in 3 hours.,acknowledged,38.831551,-97.918831,River Delta,3,4
+ALT-026,2026-01-03T16:35:58.284398,Flood,Medium,Flood Risk Alert - Station B,Flood risk 88%. Expected flooding in 10 hours.,active,35.144615,44.556626,Harbor Entrance,4,3
+ALT-027,2026-01-03T18:35:58.284398,Ship Emergency,Critical,Ship Emergency - Cargo Voyager,Vessel showing anomalous behavior. Immediate response required.,active,29.378973,4.736968,Coastal Point,4,1
+ALT-028,2026-01-03T20:35:58.284398,Oil Spill,Medium,Oil Spill Detected,Spill detected affecting 0.6 km². Deploy containment team.,acknowledged,25.339423,-20.283121,Coastal Point,5,3
+ALT-029,2026-01-03T22:35:58.284398,Oil Spill,Medium,Chemical Spill Detected,Spill detected affecting 1.2 km². Deploy containment team.,active,35.56414,-64.92632,River Delta,5,3
+ALT-030,2026-01-04T00:35:58.284398,Flood,Medium,Flood Risk Alert - Station B,Flood risk 60%. Expected flooding in 5 hours.,active,25.111931,34.874081,Coastal Point,4,3

@@ -1,0 +1,381 @@
+{
+  "flood_predictions": {
+    "description": "Flood risk prediction results from Azure ML model",
+    "columns": [
+      {
+        "name": "timestamp",
+        "type": "datetime",
+        "description": "Prediction timestamp",
+        "example": "2024-01-15T10:30:00"
+      },
+      {
+        "name": "location_id",
+        "type": "string",
+        "description": "Unique location identifier",
+        "example": "LOC001"
+      },
+      {
+        "name": "location_name",
+        "type": "string",
+        "description": "Human-readable location name",
+        "example": "River Delta Station"
+      },
+      {
+        "name": "latitude",
+        "type": "float",
+        "description": "Location latitude",
+        "example": "40.7128"
+      },
+      {
+        "name": "longitude",
+        "type": "float",
+        "description": "Location longitude",
+        "example": "-74.0060"
+      },
+      {
+        "name": "rainfall_mm_per_hour",
+        "type": "float",
+        "description": "Current rainfall rate",
+        "example": "25.5"
+      },
+      {
+        "name": "river_level_meters",
+        "type": "float",
+        "description": "River water level",
+        "example": "6.2"
+      },
+      {
+        "name": "soil_moisture_percent",
+        "type": "float",
+        "description": "Soil moisture content",
+        "example": "78.5"
+      },
+      {
+        "name": "risk_percentage",
+        "type": "float",
+        "description": "Flood risk probability (0-100)",
+        "example": "85.2"
+      },
+      {
+        "name": "risk_level",
+        "type": "string",
+        "description": "Risk categorization",
+        "example": "High"
+      },
+      {
+        "name": "time_to_flood_hours",
+        "type": "float",
+        "description": "Estimated time to flooding",
+        "example": "4.5"
+      },
+      {
+        "name": "confidence_score",
+        "type": "float",
+        "description": "Model confidence (0-1)",
+        "example": "0.923"
+      }
+    ]
+  },
+  "ship_emergencies": {
+    "description": "Ship emergency detection results from AIS analysis",
+    "columns": [
+      {
+        "name": "timestamp",
+        "type": "datetime",
+        "description": "Detection timestamp",
+        "example": "2024-01-15T10:30:00"
+      },
+      {
+        "name": "mmsi",
+        "type": "string",
+        "description": "Maritime Mobile Service Identity",
+        "example": "000000001"
+      },
+      {
+        "name": "ship_name",
+        "type": "string",
+        "description": "Vessel name",
+        "example": "Cargo Voyager"
+      },
+      {
+        "name": "ship_type",
+        "type": "string",
+        "description": "Vessel category",
+        "example": "cargo"
+      },
+      {
+        "name": "latitude",
+        "type": "float",
+        "description": "Current latitude",
+        "example": "40.7128"
+      },
+      {
+        "name": "longitude",
+        "type": "float",
+        "description": "Current longitude",
+        "example": "-74.0060"
+      },
+      {
+        "name": "speed_knots",
+        "type": "float",
+        "description": "Current speed",
+        "example": "12.5"
+      },
+      {
+        "name": "heading_degrees",
+        "type": "float",
+        "description": "Course heading",
+        "example": "045.0"
+      },
+      {
+        "name": "emergency_status",
+        "type": "string",
+        "description": "Emergency detection result",
+        "example": "Emergency"
+      },
+      {
+        "name": "anomaly_score",
+        "type": "float",
+        "description": "Anomaly detection score",
+        "example": "-0.85"
+      },
+      {
+        "name": "emergency_probability",
+        "type": "float",
+        "description": "Emergency probability (0-1)",
+        "example": "0.92"
+      },
+      {
+        "name": "anomaly_type",
+        "type": "string",
+        "description": "Type of anomaly detected",
+        "example": "Sudden_Stop"
+      }
+    ]
+  },
+  "spill_detections": {
+    "description": "Oil and chemical spill detection from image analysis",
+    "columns": [
+      {
+        "name": "timestamp",
+        "type": "datetime",
+        "description": "Detection timestamp",
+        "example": "2024-01-15T10:30:00"
+      },
+      {
+        "name": "location_id",
+        "type": "string",
+        "description": "Unique location identifier",
+        "example": "LOC001"
+      },
+      {
+        "name": "location_name",
+        "type": "string",
+        "description": "Human-readable location name",
+        "example": "River Delta Station"
+      },
+      {
+        "name": "latitude",
+        "type": "float",
+        "description": "Spill location latitude",
+        "example": "40.7128"
+      },
+      {
+        "name": "longitude",
+        "type": "float",
+        "description": "Spill location longitude",
+        "example": "-74.0060"
+      },
+      {
+        "name": "spill_detected",
+        "type": "boolean",
+        "description": "Whether spill was detected",
+        "example": "True"
+      },
+      {
+        "name": "spill_type",
+        "type": "string",
+        "description": "Type of spill",
+        "example": "Oil"
+      },
+      {
+        "name": "severity_level",
+        "type": "string",
+        "description": "Spill severity",
+        "example": "High"
+      },
+      {
+        "name": "affected_area_km2",
+        "type": "float",
+        "description": "Estimated affected area",
+        "example": "2.35"
+      },
+      {
+        "name": "confidence_score",
+        "type": "float",
+        "description": "Detection confidence (0-1)",
+        "example": "0.89"
+      },
+      {
+        "name": "source_type",
+        "type": "string",
+        "description": "Likely spill source",
+        "example": "ship"
+      },
+      {
+        "name": "estimated_volume_liters",
+        "type": "integer",
+        "description": "Estimated spill volume",
+        "example": "5000"
+      }
+    ]
+  },
+  "alerts": {
+    "description": "System alerts generated from all detection modules",
+    "columns": [
+      {
+        "name": "alert_id",
+        "type": "string",
+        "description": "Unique alert identifier",
+        "example": "ALT-001"
+      },
+      {
+        "name": "timestamp",
+        "type": "datetime",
+        "description": "Alert generation time",
+        "example": "2024-01-15T10:30:00"
+      },
+      {
+        "name": "alert_type",
+        "type": "string",
+        "description": "Type of alert",
+        "example": "Flood"
+      },
+      {
+        "name": "level",
+        "type": "string",
+        "description": "Alert severity level",
+        "example": "High"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "description": "Alert title",
+        "example": "Flood Risk Alert - Station A"
+      },
+      {
+        "name": "message",
+        "type": "string",
+        "description": "Detailed alert message",
+        "example": "Flood risk 85%. Expected flooding in 4.5 hours."
+      },
+      {
+        "name": "status",
+        "type": "string",
+        "description": "Alert status",
+        "example": "active"
+      },
+      {
+        "name": "latitude",
+        "type": "float",
+        "description": "Alert location latitude",
+        "example": "40.7128"
+      },
+      {
+        "name": "longitude",
+        "type": "float",
+        "description": "Alert location longitude",
+        "example": "-74.0060"
+      },
+      {
+        "name": "location_name",
+        "type": "string",
+        "description": "Alert location name",
+        "example": "River Delta"
+      },
+      {
+        "name": "actions_required",
+        "type": "integer",
+        "description": "Number of recommended actions",
+        "example": "3"
+      },
+      {
+        "name": "priority_score",
+        "type": "integer",
+        "description": "Priority for sorting (1=highest)",
+        "example": "2"
+      }
+    ]
+  },
+  "digital_twin": {
+    "description": "Digital twin simulation state and predictions",
+    "columns": [
+      {
+        "name": "timestamp",
+        "type": "datetime",
+        "description": "Simulation timestamp",
+        "example": "2024-01-15T10:30:00"
+      },
+      {
+        "name": "flooded_area_km2",
+        "type": "float",
+        "description": "Simulated flooded area",
+        "example": "3.5"
+      },
+      {
+        "name": "spilled_area_km2",
+        "type": "float",
+        "description": "Simulated spill area",
+        "example": "1.8"
+      },
+      {
+        "name": "max_flood_depth",
+        "type": "float",
+        "description": "Maximum flood depth",
+        "example": "1.2"
+      },
+      {
+        "name": "max_spill_concentration",
+        "type": "float",
+        "description": "Maximum spill concentration",
+        "example": "0.75"
+      },
+      {
+        "name": "overall_risk_score",
+        "type": "float",
+        "description": "Overall risk assessment (0-1)",
+        "example": "0.68"
+      },
+      {
+        "name": "risk_level",
+        "type": "string",
+        "description": "Overall risk level",
+        "example": "Medium"
+      },
+      {
+        "name": "wind_speed_kmh",
+        "type": "float",
+        "description": "Wind speed for simulation",
+        "example": "15.2"
+      },
+      {
+        "name": "wind_direction_degrees",
+        "type": "float",
+        "description": "Wind direction",
+        "example": "045.0"
+      },
+      {
+        "name": "water_current_speed_kmh",
+        "type": "float",
+        "description": "Water current speed",
+        "example": "2.8"
+      },
+      {
+        "name": "simulation_type",
+        "type": "string",
+        "description": "Simulation type identifier",
+        "example": "Digital Twin Simulation (MVP Concept)"
+      }
+    ]
+  }
+}
