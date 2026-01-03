@@ -71,13 +71,22 @@ python generate_sample_data.py
 python main.py
 ```
 
-#### 5. Connect Power BI
+#### 4. Connect Power BI (Optional - Strategic Analytics)
 1. Open Power BI Desktop
 2. Get Data > Text/CSV > Select files in `./data/outputs/`
 3. Follow the Power BI Design Guide
 4. Set auto-refresh to 5 minutes
 
-**🎉 You're ready to demo AquaGuard AI!**
+#### 5. Launch Web Dashboard (Primary Interface)
+```bash
+# Run the web application
+python web_app.py
+
+# Open browser to: http://localhost:5000
+# For mobile: Use tablet/phone browser
+```
+
+**🎉 You're ready to demo AquaGuard AI with both interfaces!**
 
 ---
 
@@ -85,10 +94,10 @@ python main.py
 
 ### Data Flow Overview
 ```
-[Simulated Sensors] → [AI Processing] → [Digital Twin] → [Power BI Dashboard]
+[Simulated Sensors] → [AI Processing] → [Digital Twin] → [Dual Interfaces]
         ↓                    ↓              ↓              ↓
-   Weather Data        Azure ML        Azure Maps    Real-time Alerts
-   Ship AIS Data       AI Vision       Simulation    Risk Visualization
+   Weather Data        Azure ML        Azure Maps    📊 Power BI + 🌐 Web App
+   Ship AIS Data       AI Vision       Simulation    Strategic + Operational
    Satellite Images    Anomaly Detection           Emergency Intelligence
 ```
 
@@ -118,11 +127,17 @@ python main.py
 - **Output**: Spread predictions, risk assessments
 - **Innovation**: Multi-hazard simulation environment
 
-#### 5. 📊 Power BI Dashboard
+#### 5. 📊 Power BI Dashboard (Strategic Analytics)
 - **Technology**: Power BI + Real-time Analytics
 - **Input**: All system outputs
-- **Output**: Interactive visualization, alerts
-- **Innovation**: Unified emergency command center
+- **Output**: Interactive visualization, deep analytics
+- **Innovation**: Strategic emergency command center
+
+#### 6. 🌐 Web Dashboard (Real-Time Operations)
+- **Technology**: Flask + Azure App Service + Microsoft Fluent UI
+- **Input**: REST API from AI modules
+- **Output**: Real-time monitoring, mobile-responsive interface
+- **Innovation**: Operational emergency response center
 
 ---
 
@@ -192,16 +207,18 @@ river_level = 7.5     # High water
 **Setup**: All three scenarios active simultaneously
 
 **What to Show**:
-1. **Unified Dashboard**: All hazards visible on single interface
-2. **Priority Matrix**: Critical alerts highlighted
-3. **Resource Allocation**: Shows coordinated response
-4. **Overall Risk Score**: Comprehensive risk assessment
+1. **Web Dashboard**: Real-time monitoring with live updates
+2. **Power BI Dashboard**: Deep analytics and trend analysis
+3. **Priority Matrix**: Critical alerts highlighted across both interfaces
+4. **Resource Allocation**: Shows coordinated response
 5. **Mobile View**: Responsive design for field teams
+6. **Dual Interface Strategy**: Strategic + Operational capabilities
 
 **Key Talking Points**:
-- "First system to integrate multiple maritime hazards"
-- "Unified command center for coordinated response"
-- "Scalable to global maritime operations"
+- "First system to integrate multiple maritime hazards with dual interfaces"
+- "Web dashboard provides real-time operations, Power BI enables strategic analysis"
+- "Unified command center for coordinated response across all devices"
+- "Scalable to global maritime operations with Microsoft Azure"
 
 ---
 
@@ -264,6 +281,17 @@ az eventhubs eventhub create \
   --namespace-name AquaGuard-Events
 ```
 
+#### 5. Azure App Service (Web Dashboard)
+```bash
+# Deploy web application to Azure
+./deploy_azure.sh
+
+# Or manual deployment:
+az group create --name AquaGuard-Web-RG --location eastus2
+az appservice plan create --name AquaGuard-Plan --resource-group AquaGuard-Web-RG --sku B1 --is-linux
+az webapp create --name aquaguard-ai-webapp --resource-group AquaGuard-Web-RG --plan AquaGuard-Plan --runtime "PYTHON|3.9"
+```
+
 ### Environment Configuration
 ```bash
 # .env file configuration
@@ -278,7 +306,9 @@ ALERT_THRESHOLD_SPILL_CONFIDENCE=0.7
 
 ---
 
-## 📱 POWER BI SETUP
+## 📱 POWER BI & WEB DASHBOARD SETUP
+
+### 📊 Power BI Dashboard (Strategic Analytics)
 
 ### Step-by-Step Dashboard Creation
 
@@ -287,6 +317,33 @@ ALERT_THRESHOLD_SPILL_CONFIDENCE=0.7
 2. Get Data > Text/CSV
 3. Select all files in `./data/outputs/`
 4. Load data (no transformation needed)
+
+### 🌐 Web Dashboard (Real-Time Operations)
+
+#### Local Development
+```bash
+# Install web dependencies
+pip install flask flask-cors
+
+# Run web application
+python web_app.py
+
+# Open browser to: http://localhost:5000
+```
+
+#### Azure Deployment
+```bash
+# Deploy to Azure App Service
+./deploy_azure.sh
+
+# Access: https://aquaguard-ai-webapp.azurewebsites.net
+```
+
+### 🔄 Dual Interface Strategy
+- **Power BI**: Deep analytics, historical trends, executive reporting
+- **Web App**: Real-time operations, mobile access, field operations
+
+### 📊 Power BI Detailed Setup
 
 #### 2. Create Relationships
 ```
