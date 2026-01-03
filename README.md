@@ -39,7 +39,7 @@ AquaGuard AI is a **comprehensive emergency intelligence system** that predicts 
 #### 1. Clone and Setup
 ```bash
 # Clone the repository
-git clone https://github.com/your-team/AquaGuard-AI.git
+git clone https://github.com/saipraveen-k/AquaGuard-AI.git
 cd AquaGuard-AI
 
 # Create virtual environment
@@ -486,4 +486,4 @@ Imagine Cup 2024, Microsoft Cloud & AI Championship
 
 *🚀 Ready to save lives and protect our oceans? Let's build a safer maritime future together!*
 
-**#ImagineCup2024 #MicrosoftAI #AquaGuardAI #SaveLives #ProtectOceans**
+**#ImagineCup2026 #MicrosoftAI #AquaGuardAI #SaveLives #ProtectOceans**
