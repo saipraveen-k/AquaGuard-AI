@@ -17,17 +17,17 @@ azure-iot-device==2.12.0
 azure-storage-blob==12.17.0
 azure-openai==1.0.0
 
+# Web Application (Microsoft Stack)
+flask==2.3.3
+flask-cors==4.0.0
+gunicorn==21.2.0
+werkzeug==2.3.7
+
 # Data processing and simulation
 faker==19.3.0
 random-username==1.0.1
 geopy==2.3.0
 haversine==2.8.0
-
-# Web and API
-fastapi==0.101.1
-uvicorn==0.23.2
-pydantic==2.3.0
-python-multipart==0.0.6
 
 # Utilities
 python-dotenv==1.0.0
@@ -35,5 +35,6 @@ pyyaml==6.0.1
 tqdm==4.66.1
 datetime
 
-# Power BI integration (if needed)
-pyodbc==4.0.39
+# Azure Web App dependencies
+msrest==0.7.1
+applicationinsights==0.11.10
