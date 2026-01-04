@@ -8,14 +8,14 @@ plotly==5.15.0
 Pillow==10.0.0
 opencv-python==4.8.0.76
 
-# Azure SDK
+# Azure SDK (compatible versions)
 azure-ai-ml==1.6.0
 azure-cognitiveservices-vision-computervision==0.9.0
-azure-maps-search==1.0.0
+azure-maps-search==2.0.0b2
 azure-eventhub==5.11.3
 azure-iot-device==2.12.0
 azure-storage-blob==12.17.0
-azure-openai==1.0.0
+openai==0.28.1
 
 # Web Application (Microsoft Stack)
 flask==2.3.3
@@ -25,7 +25,6 @@ werkzeug==2.3.7
 
 # Data processing and simulation
 faker==19.3.0
-random-username==1.0.1
 geopy==2.3.0
 haversine==2.8.0
 
@@ -33,7 +32,6 @@ haversine==2.8.0
 python-dotenv==1.0.0
 pyyaml==6.0.1
 tqdm==4.66.1
-datetime
 
 # Azure Web App dependencies
 msrest==0.7.1
