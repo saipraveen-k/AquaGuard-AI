@@ -1,6 +1,6 @@
 # 🌊 AquaGuard AI - Unified Flood, Ocean & Maritime Emergency Intelligence System
 
-**Imagine Cup 2024 | Microsoft Cloud & AI Championship**
+**Imagine Cup 2026 | Microsoft Cloud & AI Championship**
 
 ![AquaGuard AI Logo](https://via.placeholder.com/600x200/0078D4/FFFFFF?text=AquaGuard+AI+-+Emergency+Intelligence)
 
@@ -10,19 +10,20 @@
 
 ### What is AquaGuard AI?
 
-AquaGuard AI is a **comprehensive emergency intelligence system** that predicts floods, detects ship emergencies without SOS signals, identifies oil/chemical spills, and provides real-time risk visualization through an integrated Power BI dashboard. Built entirely on Microsoft Azure and AI technologies, AquaGuard AI serves as a unified command center for maritime and coastal emergency response.
+AquaGuard AI is a **comprehensive emergency intelligence system** that predicts floods, detects ship emergencies without SOS signals, identifies oil/chemical spills, and provides real-time risk visualization through an integrated **dual interface system** (Power BI + Web Dashboard). Built entirely on Microsoft Azure and AI technologies with **Azure OpenAI integration**, AquaGuard AI serves as a unified command center for maritime and coastal emergency response with **intelligent AI-powered analysis and alerting**.
 
 ### Why It Matters
 
-**Environmental Impact**: Every year, natural disasters and maritime accidents cause billions in damages and thousands of lives lost. Traditional emergency response systems are reactive - we're making them **predictive and proactive**.
+**Environmental Impact**: Every year, natural disasters and maritime accidents cause billions in damages and thousands of lives lost. Traditional emergency response systems are reactive - we're making them **predictive and proactive** with **AI-powered intelligence**.
 
 **Social Impact**: Our system provides early warnings that can:
 - Save lives through advanced flood predictions
 - Protect marine ecosystems from spill damage  
 - Reduce economic losses through faster emergency response
 - Support vulnerable coastal communities worldwide
+- Provide **intelligent emergency coordination** with AI insights
 
-**Innovation**: First unified system combining flood prediction, ship emergency detection, and spill monitoring in a single AI-powered platform.
+**Innovation**: First unified system combining flood prediction, ship emergency detection, and spill monitoring in a single **AI-powered platform** with **Azure OpenAI integration** for **intelligent alert generation** and **expert-level analysis**.
 
 ---
 
@@ -31,6 +32,7 @@ AquaGuard AI is a **comprehensive emergency intelligence system** that predicts 
 ### Prerequisites
 - Python 3.8+ installed
 - Microsoft Azure account (free tier works)
+- **Azure OpenAI resource** (optional, for AI-powered features)
 - Power BI Desktop (free version available)
 - 15 minutes for initial setup
 
@@ -57,6 +59,10 @@ cp .env.example .env
 
 # Edit .env with your Azure credentials
 # (See Azure Setup section below)
+# Add Azure OpenAI credentials for AI features:
+# AZURE_OPENAI_ENDPOINT=https://your-openai-endpoint.openai.azure.com/
+# AZURE_OPENAI_KEY=your_openai_key
+# AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4
 ```
 
 #### 3. Generate Sample Data
@@ -71,22 +77,31 @@ python generate_sample_data.py
 python main.py
 ```
 
-#### 4. Connect Power BI (Optional - Strategic Analytics)
+#### 5. Connect Power BI (Optional - Strategic Analytics)
 1. Open Power BI Desktop
 2. Get Data > Text/CSV > Select files in `./data/outputs/`
 3. Follow the Power BI Design Guide
 4. Set auto-refresh to 5 minutes
 
-#### 5. Launch Web Dashboard (Primary Interface)
+#### 6. Launch Web Dashboard (Primary Interface)
 ```bash
 # Run the web application
 python web_app.py
 
 # Open browser to: http://localhost:5000
+# Features: Enhanced UI with Glass Morphism design
 # For mobile: Use tablet/phone browser
 ```
 
 **🎉 You're ready to demo AquaGuard AI with both interfaces!**
+
+### 🤖 AI Features (Optional)
+
+When Azure OpenAI credentials are configured:
+- **Intelligent Alert Messages**: AI-powered emergency coordination
+- **Expert Spill Analysis**: Professional environmental impact assessment
+- **Context-Aware Responses**: Dynamic emergency messaging
+- **Graceful Fallback**: System works without AI credentials
 
 ---
 
@@ -94,11 +109,11 @@ python web_app.py
 
 ### Data Flow Overview
 ```
-[Simulated Sensors] → [AI Processing] → [Digital Twin] → [Dual Interfaces]
-        ↓                    ↓              ↓              ↓
-   Weather Data        Azure ML        Azure Maps    📊 Power BI + 🌐 Web App
-   Ship AIS Data       AI Vision       Simulation    Strategic + Operational
-   Satellite Images    Anomaly Detection           Emergency Intelligence
+[Simulated Sensors] → [AI Processing] → [Azure OpenAI] → [Digital Twin] → [Dual Interfaces]
+        ↓                    ↓              ↓              ↓              ↓
+   Weather Data        Azure ML        AI Intelligence  Azure Maps    📊 Power BI + 🌐 Web App
+   Ship AIS Data       AI Vision       Smart Alerts     Simulation    Strategic + Operational
+   Satellite Images    Anomaly Detection Expert Analysis    Emergency Intelligence
 ```
 
 ### Core Components
@@ -116,10 +131,10 @@ python web_app.py
 - **Innovation**: SOS-independent detection system
 
 #### 3. 🛢️ Oil & Chemical Spill Detection
-- **Technology**: Azure AI Vision + Image Classification
+- **Technology**: Azure AI Vision + Image Classification + **Azure OpenAI**
 - **Input**: Satellite/drone imagery
-- **Output**: Spill type, severity, affected area
-- **Innovation**: Real-time image-based monitoring
+- **Output**: Spill type, severity, affected area, **AI-powered analysis**
+- **Innovation**: Real-time image-based monitoring with **expert-level explanations**
 
 #### 4. 🗺️ Digital Twin Simulation
 - **Technology**: Azure Maps + Physics Models
@@ -134,10 +149,16 @@ python web_app.py
 - **Innovation**: Strategic emergency command center
 
 #### 6. 🌐 Web Dashboard (Real-Time Operations)
-- **Technology**: Flask + Azure App Service + Microsoft Fluent UI
+- **Technology**: Flask + Azure App Service + Microsoft Fluent UI + **Glass Morphism Design**
 - **Input**: REST API from AI modules
-- **Output**: Real-time monitoring, mobile-responsive interface
-- **Innovation**: Operational emergency response center
+- **Output**: Real-time monitoring, mobile-responsive interface, **enhanced UI**
+- **Innovation**: Operational emergency response center with **modern visual design**
+
+#### 7. 🤖 Azure OpenAI Intelligence (Advanced AI)
+- **Technology**: Azure OpenAI GPT-4 + Custom Prompts
+- **Input**: Emergency context, sensor data, detection results
+- **Output**: **Intelligent alert messages**, **expert spill analysis**, **context-aware responses**
+- **Innovation**: **AI-powered emergency coordination** with **professional insights**
 
 ---
 

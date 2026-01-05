@@ -5,9 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AquaGuard AI - Maritime Emergency Intelligence</title>
     
-    <!-- Microsoft Fluent UI -->
+    <!-- Enhanced UI Libraries -->
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/10.0.0/css/fabric.min.css">
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-react/7.185.0/css/fabric-react.min.css">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Animate.css for Animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     
     <!-- Azure Maps -->
     <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css">
@@ -18,6 +27,14 @@
     <!-- Custom Styles -->
     <style>
         :root {
+            --primary-gradient: linear-gradient(135deg, #0078d4 0%, #106ebe 50%, #004578 100%);
+            --success-gradient: linear-gradient(135deg, #107c10 0%, #0e6b0e 50%, #0a540a 100%);
+            --warning-gradient: linear-gradient(135deg, #ca5010 0%, #b34100 50%, #8e3200 100%);
+            --danger-gradient: linear-gradient(135deg, #d13438 0%, #a4262a 50%, #8c1d1f 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.15);
             --ms-color-themePrimary: #0078d4;
             --ms-color-themeLighterAlt: #f3f9fd;
             --ms-color-themeLighter: #d4ecfc;
@@ -44,118 +61,274 @@
         }
 
         body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--ms-color-neutralLighterAlt);
-            color: var(--ms-color-neutralDark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            color: var(--ms-color-black);
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .glass-morphism {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-soft);
+            border-radius: 20px;
+        }
+        
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-hover);
         }
 
         .header {
-            background: linear-gradient(135deg, var(--ms-color-themePrimary) 0%, var(--ms-color-themeDark) 100%);
-            color: white;
-            padding: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: var(--ms-color-themePrimary);
+            padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-soft);
+            border-radius: 0 0 30px 30px;
+            position: relative;
+            overflow: hidden;
         }
-
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary-gradient);
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
         .header h1 {
             margin: 0;
-            font-size: 2.5rem;
-            font-weight: 300;
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 120, 212, 0.3);
         }
-
-        .header p {
+        
+        .header .subtitle {
             margin: 10px 0 0 0;
-            opacity: 0.9;
-            font-size: 1.1rem;
+            opacity: 0.8;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--ms-color-neutralDark);
+        }
+        
+        .header .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--success-gradient);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 15px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 30px 20px;
         }
 
         .kpi-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
         }
 
         .kpi-card {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-left: 4px solid var(--ms-color-themePrimary);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+        
+        .kpi-card.critical::before {
+            background: var(--danger-gradient);
+        }
+        
+        .kpi-card.warning::before {
+            background: var(--warning-gradient);
+        }
+        
+        .kpi-card.success::before {
+            background: var(--success-gradient);
         }
 
         .kpi-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-hover);
         }
-
-        .kpi-card.critical {
-            border-left-color: #d83b01;
+        
+        .kpi-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            opacity: 0.2;
+            color: var(--ms-color-themePrimary);
         }
-
-        .kpi-card.warning {
-            border-left-color: #ca5010;
+        
+        .kpi-card.critical .kpi-icon {
+            color: #d13438;
         }
-
-        .kpi-card.success {
-            border-left-color: #107c10;
+        
+        .kpi-card.warning .kpi-icon {
+            color: #ca5010;
+        }
+        
+        .kpi-card.success .kpi-icon {
+            color: #107c10;
         }
 
         .kpi-title {
             font-size: 0.9rem;
+            font-weight: 600;
             color: var(--ms-color-neutralSecondary);
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         .kpi-value {
-            font-size: 2rem;
-            font-weight: 600;
+            font-size: 2.5rem;
+            font-weight: 800;
             margin-bottom: 8px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .kpi-card.critical .kpi-value {
+            background: var(--danger-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .kpi-card.warning .kpi-value {
+            background: var(--warning-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .kpi-card.success .kpi-value {
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .kpi-subtitle {
             font-size: 0.9rem;
             color: var(--ms-color-neutralTertiary);
+            font-weight: 500;
         }
 
         .main-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 25px;
+            margin-bottom: 40px;
         }
 
         .panel {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0078d4, #00bcf2);
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .panel:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
         .panel-header {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--ms-color-themePrimary);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #1a1a1a;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: relative;
+            z-index: 1;
         }
 
         .panel-icon {
-            font-size: 1.5rem;
-            margin-right: 10px;
+            font-size: 1.6rem;
+            margin-right: 12px;
+            color: #0078d4;
         }
 
         .alert-item {
@@ -193,9 +366,11 @@
         }
 
         .map-container {
-            height: 400px;
-            border-radius: 8px;
+            height: 500px;
+            border-radius: 12px;
             overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .chart-container {
@@ -206,20 +381,36 @@
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .data-table th,
         .data-table td {
-            padding: 12px;
+            padding: 14px 16px;
             text-align: left;
-            border-bottom: 1px solid var(--ms-color-neutralLight);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         }
 
         .data-table th {
-            background: var(--ms-color-neutralLighter);
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
             font-weight: 600;
-            color: var(--ms-color-neutralDark);
+            color: #2c3e50;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            color: #34495e;
+            font-weight: 500;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(0, 120, 212, 0.05);
         }
 
         .status-badge {
@@ -231,38 +422,192 @@
         }
 
         .status-emergency {
-            background: #d83b01;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
-        }
-
-        .status-normal {
-            background: #107c10;
-            color: white;
+            box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
         }
 
         .status-detected {
-            background: #ca5010;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
             color: white;
+            box-shadow: 0 2px 4px rgba(243, 156, 18, 0.3);
+        }
+
+        .status-warning {
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+            color: #2c3e50;
+            box-shadow: 0 2px 4px rgba(241, 196, 15, 0.3);
+        }
+
+        .status-normal {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            box-shadow: 0 2px 4px rgba(39, 174, 96, 0.3);
+        }
+
+        .alert-item {
+            padding: 14px;
+            border-left: 4px solid #d83b01;
+            background: #fdf6f3;
+            margin-bottom: 12px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .alert-item.warning {
+            border-left-color: #ca5010;
+            background: #fff8e6;
+        }
+
+        .alert-item.info {
+            border-left-color: #0078d4;
+            background: #f0f9ff;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #2c3e50;
+        }
+
+        .alert-message {
+            font-size: 0.9rem;
+            color: #34495e;
+            margin-bottom: 8px;
+        }
+
+        .alert-time {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 6px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #0078d4, #00bcf2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 120, 212, 0.3);
+        }
+
+        .refresh-btn:hover {
+            background: linear-gradient(135deg, #005a9e, #0078d4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 120, 212, 0.4);
+        }
+
+        .alert-count-badge {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
         }
 
         .loading {
             text-align: center;
             padding: 40px;
-            color: var(--ms-color-neutralSecondary);
+            color: #7f8c8d;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 120, 212, 0.2);
+            border-top: 4px solid #0078d4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .refresh-btn {
-            background: var(--ms-color-themePrimary);
+            background: var(--primary-gradient);
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 12px 24px;
+            border-radius: 25px;
             cursor: pointer;
             font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-soft);
         }
 
         .refresh-btn:hover {
-            background: var(--ms-color-themeDark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .alert-item {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .alert-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .alert-critical {
+            border-left: 4px solid #d13438;
+        }
+        
+        .alert-warning {
+            border-left: 4px solid #ca5010;
+        }
+        
+        .alert-info {
+            border-left: 4px solid var(--ms-color-themePrimary);
+        }
+        
+        .alert-count-badge {
+            background: var(--danger-gradient);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            min-width: 30px;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .map-container {
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .panel-icon {
+            margin-right: 10px;
+            color: var(--ms-color-themePrimary);
         }
 
         @media (max-width: 768px) {
@@ -281,48 +626,66 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>🌊 AquaGuard AI</h1>
-        <p>Unified Flood, Ocean & Maritime Emergency Intelligence System</p>
+    <header class="header animate__animated animate__fadeInDown">
+        <div class="header-content">
+            <h1><i class="fas fa-water"></i> AquaGuard AI</h1>
+            <p class="subtitle">Unified Flood, Ocean & Maritime Emergency Intelligence System</p>
+            <div class="status-badge">
+                <i class="fas fa-circle"></i> System Online
+            </div>
+        </div>
     </header>
 
     <div class="container">
         <!-- KPI Cards -->
         <div class="kpi-row" id="kpiRow">
-            <div class="loading">Loading KPIs...</div>
+            <div class="loading animate__animated animate__fadeIn">
+                <div class="loading-spinner"></div>
+                <p>Loading KPIs...</p>
+            </div>
         </div>
 
         <!-- Main Grid -->
-        <div class="main-grid">
+        <div class="main-grid animate__animated animate__fadeInUp">
             <!-- Risk Map Panel -->
-            <div class="panel">
+            <div class="panel hover-lift">
                 <div class="panel-header">
-                    <span><span class="panel-icon">🗺️</span>Geographic Risk Overview</span>
-                    <button class="refresh-btn" onclick="refreshData()">Refresh</button>
+                    <span><i class="fas fa-map-marked-alt panel-icon"></i>Geographic Risk Overview</span>
+                    <button class="refresh-btn" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
                 <div class="map-container">
-                    <div id="riskMap"></div>
+                    <div id="riskMap" class="glass-morphism">
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; color: #1976d2; font-weight: 600;">
+                            <div>
+                                🗺️ Loading Geographic Risk Map...<br>
+                                <small>Initializing Azure Maps with emergency data</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Alerts Panel -->
-            <div class="panel">
+            <div class="panel hover-lift">
                 <div class="panel-header">
-                    <span><span class="panel-icon">🚨</span>Active Alerts</span>
-                    <span id="alertCount">0</span>
+                    <span><i class="fas fa-exclamation-triangle panel-icon"></i>Active Alerts</span>
+                    <span class="alert-count-badge" id="alertCount">0</span>
                 </div>
                 <div id="alertsList">
-                    <div class="loading">Loading alerts...</div>
+                    <div class="loading animate__animated animate__fadeIn">
+                        <div class="loading-spinner"></div>
+                        <p>Loading alerts...</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Secondary Grid -->
-        <div class="main-grid">
+        <div class="main-grid animate__animated animate__fadeInUp animate__delay-1s">
             <!-- Flood Details Panel -->
-            <div class="panel">
+            <div class="panel hover-lift">
                 <div class="panel-header">
-                    <span><span class="panel-icon">🌊</span>Flood Risk Analysis</span>
+                    <span><i class="fas fa-water panel-icon"></i>Flood Risk Analysis</span>
                 </div>
                 <div class="chart-container">
                     <canvas id="floodChart"></canvas>
@@ -331,20 +694,32 @@
             </div>
 
             <!-- Ship Monitor Panel -->
-            <div class="panel">
+            <div class="panel hover-lift">
                 <div class="panel-header">
-                    <span><span class="panel-icon">🚢</span>Ship Emergency Monitor</span>
+                    <span><i class="fas fa-ship panel-icon"></i>Ship Emergency Monitor</span>
                 </div>
-                <div id="shipTable"></div>
+                <div id="shipTable">
+                    <div style="text-align: center; padding: 20px; color: #0078d4;">
+                        <i class="fas fa-ship" style="font-size: 2rem; margin-bottom: 10px;"></i><br>
+                        <strong>Loading Ship Data...</strong><br>
+                        <small>Please wait while we fetch emergency vessel information</small>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Spill Detection Panel -->
-        <div class="panel">
+        <div class="panel hover-lift animate__animated animate__fadeInUp animate__delay-2s">
             <div class="panel-header">
-                <span><span class="panel-icon">🛢️</span>Oil & Chemical Spill Detection</span>
+                <span><i class="fas fa-oil-can panel-icon"></i>Oil & Chemical Spill Detection</span>
             </div>
-            <div id="spillTable"></div>
+            <div id="spillTable">
+                <div style="text-align: center; padding: 20px; color: #7b1fa2;">
+                    <i class="fas fa-oil-can" style="font-size: 2rem; margin-bottom: 10px;"></i><br>
+                    <strong>Loading Spill Data...</strong><br>
+                    <small>Please wait while we fetch spill detection information</small>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -374,17 +749,288 @@
         }
 
         function initializeMap() {
-            // Initialize Azure Maps (using placeholder for MVP)
+            // Initialize Azure Maps with actual API
             const mapElement = document.getElementById('riskMap');
-            mapElement.innerHTML = `
-                <div style="width: 100%; height: 100%; background: linear-gradient(45deg, #e3f2fd 25%, #bbdefb 25%, #bbdefb 50%, #e3f2fd 50%, #e3f2fd 75%, #bbdefb 75%, #bbdefb); background-size: 20px 20px; display: flex; align-items: center; justify-content: center; text-align: center; color: #1976d2; font-weight: 600;">
-                    <div>
-                        🗺️ Azure Maps Integration<br>
-                        <small>Risk visualization ready for Azure Maps API key</small><br>
-                        <small>Showing simulated risk hotspots</small>
+            
+            console.log('Initializing map...'); // Debug log
+            
+            // Check if Azure Maps key is available
+            const azureMapsKey = '3ArEoQBwNwfawxSVGC58b5Ed2p8MNLXfn4v9lQdeHV1jcSGTPdrKlQQj99CAACYeBjFsdvE8AAgAZMP2cn9';
+            
+            if (azureMapsKey) {
+                console.log('Azure Maps key found, initializing map'); // Debug log
+                
+                // Initialize real Azure Maps
+                map = new atlas.Map('riskMap', {
+                    authOptions: {
+                        authType: 'subscriptionKey',
+                        subscriptionKey: azureMapsKey
+                    },
+                    center: [-74.0060, 40.7128], // New York coordinates
+                    zoom: 8,
+                    view: 'Auto'
+                });
+
+                // Wait for map to load
+                map.events.add('ready', function() {
+                    console.log('Map is ready, adding controls and data'); // Debug log
+                    
+                    // Add map controls
+                    map.controls.add([
+                        new atlas.control.StyleControl(),
+                        new atlas.control.ZoomControl(),
+                        new atlas.control.CompassControl()
+                    ], {
+                        position: 'top-right'
+                    });
+
+                    // Add sample data points
+                    addMapData();
+                });
+            } else {
+                console.log('No Azure Maps key, showing fallback'); // Debug log
+                
+                // Fallback placeholder
+                mapElement.innerHTML = `
+                    <div style="width: 100%; height: 100%; background: linear-gradient(45deg, #e3f2fd 25%, #bbdefb 25%, #bbdefb 50%, #e3f2fd 50%, #e3f2fd 75%, #bbdefb 75%, #bbdefb); background-size: 20px 20px; display: flex; align-items: center; justify-content: center; text-align: center; color: #1976d2; font-weight: 600;">
+                        <div>
+                            🗺️ Azure Maps Integration<br>
+                            <small>Risk visualization ready for Azure Maps API key</small><br>
+                            <small>Showing simulated risk hotspots</small>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
+        }
+
+        async function addMapData() {
+            if (!map) return;
+
+            // Create data source for map points
+            const dataSource = new atlas.source.DataSource();
+            map.sources.add(dataSource);
+
+            try {
+                // Load real data from CSV files
+                const [floodResponse, shipResponse, spillResponse] = await Promise.all([
+                    fetch('/api/flood-data'),
+                    fetch('/api/ship-data'),
+                    fetch('/api/spill-data')
+                ]);
+
+                const floodData = await floodResponse.json();
+                const shipData = await shipResponse.json();
+                const spillData = await spillResponse.json();
+
+                // Add flood risk points from real data
+                if (floodData.success && floodData.data) {
+                    floodData.data.forEach(flood => {
+                        // Use actual coordinates or generate realistic ones
+                        const lat = flood.latitude || (40.7128 + (Math.random() - 0.5) * 0.2);
+                        const lng = flood.longitude || (-74.0060 + (Math.random() - 0.5) * 0.2);
+                        
+                        dataSource.add(new atlas.data.Feature(
+                            new atlas.data.Point(new atlas.Position(lng, lat)),
+                            {
+                                type: 'flood',
+                                severity: flood.risk_level?.toLowerCase() || 'medium',
+                                title: `Flood Risk: ${flood.risk_level || 'Medium'}`,
+                                risk_percentage: flood.risk_percentage || 50,
+                                location: flood.location || 'Unknown'
+                            }
+                        ));
+                    });
+                }
+
+                // Add ship emergency points from real data
+                if (shipData.success && shipData.data) {
+                    shipData.data.forEach(ship => {
+                        // Use actual coordinates from AIS data
+                        const lat = ship.latitude || (40.7128 + (Math.random() - 0.5) * 0.3);
+                        const lng = ship.longitude || (-74.0060 + (Math.random() - 0.5) * 0.3);
+                        
+                        dataSource.add(new atlas.data.Feature(
+                            new atlas.data.Point(new atlas.Position(lng, lat)),
+                            {
+                                type: 'ship',
+                                status: ship.emergency_status?.toLowerCase() || 'normal',
+                                title: `${ship.ship_name || 'Unknown Vessel'} - ${ship.emergency_status || 'Normal'}`,
+                                ship_type: ship.ship_type || 'Unknown',
+                                anomaly_score: ship.anomaly_score || 0,
+                                speed: ship.speed_knots || 0
+                            }
+                        ));
+                    });
+                }
+
+                // Add spill detection points from real data
+                if (spillData.success && spillData.data) {
+                    spillData.data.forEach(spill => {
+                        // Use actual coordinates from spill detection
+                        const lat = spill.latitude || (40.7128 + (Math.random() - 0.5) * 0.2);
+                        const lng = spill.longitude || (-74.0060 + (Math.random() - 0.5) * 0.2);
+                        
+                        dataSource.add(new atlas.data.Feature(
+                            new atlas.data.Point(new atlas.Position(lng, lat)),
+                            {
+                                type: 'spill',
+                                severity: spill.severity_level?.toLowerCase() || 'medium',
+                                title: `${spill.spill_type || 'Unknown'} Spill - ${spill.severity_level || 'Medium'}`,
+                                confidence: spill.confidence_score || 0.5,
+                                area: spill.affected_area_km2 || 0,
+                                volume: spill.estimated_volume_liters || 0
+                            }
+                        ));
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error loading map data:', error);
+                
+                // Fallback to sample data if API fails
+                addSampleMapData(dataSource);
+            }
+
+            // Create bubble layers for different data types
+            // Flood risk layer (red bubbles)
+            map.layers.add(new atlas.layer.BubbleLayer(dataSource, 'flood-layer', {
+                filter: ['==', ['get', 'type'], 'flood'],
+                color: [
+                    'case',
+                    ['==', ['get', 'severity'], 'high'], '#d32f2f',
+                    ['==', ['get', 'severity'], 'medium'], '#f57c00',
+                    ['#388e3c']
+                ],
+                radius: [
+                    'case',
+                    ['==', ['get', 'severity'], 'high'], 20,
+                    ['==', ['get', 'severity'], 'medium'], 15,
+                    10
+                ],
+                strokeColor: '#ffffff',
+                strokeWidth: 2,
+                opacity: 0.8
+            }));
+
+            // Ship emergency layer (orange bubbles)
+            map.layers.add(new atlas.layer.BubbleLayer(dataSource, 'ship-layer', {
+                filter: ['==', ['get', 'type'], 'ship'],
+                color: [
+                    'case',
+                    ['==', ['get', 'status'], 'emergency'], '#d32f2f',
+                    ['==', ['get', 'status'], 'anomaly'], '#ff6b35',
+                    ['#4caf50']
+                ],
+                radius: 12,
+                strokeColor: '#ffffff',
+                strokeWidth: 2,
+                opacity: 0.8
+            }));
+
+            // Spill detection layer (purple bubbles)
+            map.layers.add(new atlas.layer.BubbleLayer(dataSource, 'spill-layer', {
+                filter: ['==', ['get', 'type'], 'spill'],
+                color: [
+                    'case',
+                    ['==', ['get', 'severity'], 'critical'], '#d32f2f',
+                    ['==', ['get', 'severity'], 'high'], '#7b1fa2',
+                    ['==', ['get', 'severity'], 'medium'], '#9c27b0',
+                    ['#e91e63']
+                ],
+                radius: [
+                    'case',
+                    ['==', ['get', 'severity'], 'critical'], 25,
+                    ['==', ['get', 'severity'], 'high'], 20,
+                    ['==', ['get', 'severity'], 'medium'], 15,
+                    10
+                ],
+                strokeColor: '#ffffff',
+                strokeWidth: 2,
+                opacity: 0.8
+            }));
+
+            // Add popup for map points
+            const popup = new atlas.Popup();
+            
+            map.events.add('click', function(e) {
+                const position = e.position;
+                const properties = e.shapes[0]?.getProperties();
+                
+                if (properties) {
+                    let popupContent = `
+                        <div style="padding: 10px; min-width: 200px;">
+                            <h4 style="margin: 0 0 8px 0; color: #333; font-size: 14px;">${properties.title}</h4>
+                            <p style="margin: 4px 0; color: #666; font-size: 12px;">Type: ${properties.type}</p>
+                    `;
+                    
+                    if (properties.severity) {
+                        popupContent += `<p style="margin: 4px 0; color: #666; font-size: 12px;">Severity: ${properties.severity}</p>`;
+                    }
+                    
+                    if (properties.type === 'flood' && properties.risk_percentage) {
+                        popupContent += `<p style="margin: 4px 0; color: #666; font-size: 12px;">Risk: ${properties.risk_percentage}%</p>`;
+                    }
+                    
+                    if (properties.type === 'ship' && properties.ship_type) {
+                        popupContent += `<p style="margin: 4px 0; color: #666; font-size: 12px;">Vessel Type: ${properties.ship_type}</p>`;
+                        if (properties.speed) {
+                            popupContent += `<p style="margin: 4px 0; color: #666; font-size: 12px;">Speed: ${properties.speed} knots</p>`;
+                        }
+                    }
+                    
+                    if (properties.type === 'spill' && properties.area) {
+                        popupContent += `<p style="margin: 4px 0; color: #666; font-size: 12px;">Area: ${properties.area} km²</p>`;
+                        if (properties.volume) {
+                            popupContent += `<p style="margin: 4px 0; color: #666; font-size: 12px;">Volume: ${properties.volume} liters</p>`;
+                        }
+                    }
+                    
+                    popupContent += `</div>`;
+                    
+                    popup.setOptions({
+                        position: position,
+                        content: popupContent
+                    });
+                    popup.open(map);
+                }
+            });
+        }
+
+        function addSampleMapData(dataSource) {
+            // Fallback sample data if API fails
+            const samplePoints = [
+                {
+                    type: 'flood',
+                    severity: 'high',
+                    title: 'High Flood Risk Area',
+                    position: new atlas.Position(-74.0060, 40.7128)
+                },
+                {
+                    type: 'flood',
+                    severity: 'medium',
+                    title: 'Medium Flood Risk Area',
+                    position: new atlas.Position(-73.935242, 40.730610)
+                },
+                {
+                    type: 'ship',
+                    status: 'emergency',
+                    title: 'Ship Emergency - SOS',
+                    position: new atlas.Position(-74.0267, 40.6892)
+                },
+                {
+                    type: 'spill',
+                    severity: 'high',
+                    title: 'Oil Spill Detected',
+                    position: new atlas.Position(-74.0445, 40.6892)
+                }
+            ];
+
+            samplePoints.forEach(point => {
+                dataSource.add(new atlas.data.Feature(
+                    point.position,
+                    point
+                ));
+            });
         }
 
         async function loadAllData() {
@@ -427,26 +1073,30 @@
             const kpiRow = document.getElementById('kpiRow');
             
             kpiRow.innerHTML = `
-                <div class="kpi-card ${getKPIClass(kpis.flood_risk.current)}">
-                    <div class="kpi-title">🌊 Flood Risk</div>
+                <div class="kpi-card ${getKPIClass(kpis.flood_risk.current)} animate__animated animate__fadeInUp">
+                    <i class="fas fa-water kpi-icon"></i>
+                    <div class="kpi-title">Flood Risk</div>
                     <div class="kpi-value">${kpis.flood_risk.current}%</div>
                     <div class="kpi-subtitle">${kpis.flood_risk.level} Risk • ${kpis.flood_risk.trend}</div>
                 </div>
                 
-                <div class="kpi-card ${kpis.ship_emergencies.active > 0 ? 'critical' : 'success'}">
-                    <div class="kpi-title">🚢 Ship Emergencies</div>
+                <div class="kpi-card ${kpis.ship_emergencies.active > 0 ? 'critical' : 'success'} animate__animated animate__fadeInUp animate__delay-1s">
+                    <i class="fas fa-ship kpi-icon"></i>
+                    <div class="kpi-title">Ship Emergencies</div>
                     <div class="kpi-value">${kpis.ship_emergencies.active}</div>
                     <div class="kpi-subtitle">Active of ${kpis.ship_emergencies.total_monitored} Monitored</div>
                 </div>
                 
-                <div class="kpi-card ${kpis.spill_detections.active > 0 ? 'warning' : 'success'}">
-                    <div class="kpi-title">🛢️ Active Spills</div>
+                <div class="kpi-card ${kpis.spill_detections.active > 0 ? 'warning' : 'success'} animate__animated animate__fadeInUp animate__delay-2s">
+                    <i class="fas fa-oil-can kpi-icon"></i>
+                    <div class="kpi-title">Active Spills</div>
                     <div class="kpi-value">${kpis.spill_detections.active}</div>
                     <div class="kpi-subtitle">${kpis.spill_detections.total_area.toFixed(2)} km² Affected</div>
                 </div>
                 
-                <div class="kpi-card ${kpis.alerts.critical > 0 ? 'critical' : kpis.alerts.high > 0 ? 'warning' : 'success'}">
-                    <div class="kpi-title">🚨 System Alerts</div>
+                <div class="kpi-card ${kpis.alerts.critical > 0 ? 'critical' : kpis.alerts.high > 0 ? 'warning' : 'success'} animate__animated animate__fadeInUp animate__delay-3s">
+                    <i class="fas fa-exclamation-triangle kpi-icon"></i>
+                    <div class="kpi-title">System Alerts</div>
                     <div class="kpi-value">${kpis.alerts.active}</div>
                     <div class="kpi-subtitle">${kpis.alerts.critical} Critical • ${kpis.alerts.high} High</div>
                 </div>
@@ -477,24 +1127,33 @@
             const alertsList = document.getElementById('alertsList');
             
             if (alerts.length === 0) {
-                alertsList.innerHTML = '<div style="text-align: center; color: var(--ms-color-neutralSecondary); padding: 20px;">No active alerts</div>';
+                alertsList.innerHTML = '<div style="text-align: center; color: var(--ms-color-neutralSecondary); padding: 20px;"><i class="fas fa-check-circle" style="font-size: 2rem; color: var(--success-gradient); margin-bottom: 10px;"></i><br>No active alerts</div>';
                 return;
             }
             
-            alertsList.innerHTML = alerts.map(alert => `
-                <div class="alert-item ${getAlertClass(alert.level)}">
-                    <div class="alert-title">${alert.title}</div>
-                    <div class="alert-message">${alert.message}</div>
-                    <div class="alert-time">${formatTime(alert.timestamp)}</div>
+            alertsList.innerHTML = alerts.map((alert, index) => `
+                <div class="alert-item alert-${alert.level.toLowerCase()} animate__animated animate__fadeInLeft" style="animation-delay: ${index * 0.1}s">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: var(--ms-color-themePrimary);">
+                            <i class="fas fa-exclamation-triangle"></i> ${alert.title}
+                        </strong>
+                        <span class="status-${alert.level.toLowerCase()}">${alert.level}</span>
+                    </div>
+                    <div style="color: var(--ms-color-neutralDark); font-size: 0.9rem; margin-bottom: 8px;">
+                        ${alert.message}
+                    </div>
+                    <div style="color: var(--ms-color-neutralTertiary); font-size: 0.8rem;">
+                        <i class="fas fa-clock"></i> ${new Date(alert.timestamp).toLocaleString()}
+                    </div>
                 </div>
             `).join('');
         }
 
         function getAlertClass(level) {
             switch (level) {
-                case 'Critical': return '';
-                case 'High': return 'warning';
-                default: return 'info';
+                case 'Critical': return 'alert-critical';
+                case 'High': return 'alert-warning';
+                default: return 'alert-info';
             }
         }
 
@@ -592,7 +1251,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    renderShipTable(data.emergency_ships);
+                    renderShipTable(data.data);
                 }
             } catch (error) {
                 console.error('Error loading ship data:', error);
@@ -602,8 +1261,20 @@
         function renderShipTable(ships) {
             const tableContainer = document.getElementById('shipTable');
             
+            console.log('Rendering ship table with data:', ships); // Debug log
+            
             if (ships.length === 0) {
-                tableContainer.innerHTML = '<div style="text-align: center; color: var(--ms-color-neutralSecondary); padding: 20px;">No ship emergencies detected</div>';
+                tableContainer.innerHTML = '<div style="text-align: center; color: var(--ms-color-neutralSecondary); padding: 20px;"><i class="fas fa-ship" style="font-size: 2rem; color: var(--success-gradient); margin-bottom: 10px;"></i><br>No ship emergencies detected</div>';
+                return;
+            }
+            
+            // Filter for emergency ships and show top 5
+            const emergencyShips = ships.filter(ship => ship.emergency_status === 'Emergency').slice(0, 5);
+            
+            console.log('Emergency ships found:', emergencyShips.length); // Debug log
+            
+            if (emergencyShips.length === 0) {
+                tableContainer.innerHTML = '<div style="text-align: center; color: var(--ms-color-neutralSecondary); padding: 20px;"><i class="fas fa-ship" style="font-size: 2rem; color: var(--success-gradient); margin-bottom: 10px;"></i><br>No ship emergencies detected</div>';
                 return;
             }
             
@@ -619,13 +1290,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${ships.map(ship => `
+                        ${emergencyShips.map(ship => `
                             <tr>
-                                <td>${ship.ship_name}</td>
-                                <td>${ship.ship_type}</td>
-                                <td><span class="status-badge status-emergency">${ship.emergency_status}</span></td>
-                                <td>${ship.anomaly_type}</td>
-                                <td>${ship.latitude.toFixed(3)}, ${ship.longitude.toFixed(3)}</td>
+                                <td><strong>${ship.ship_name || 'Unknown'}</strong></td>
+                                <td>${ship.ship_type || 'Unknown'}</td>
+                                <td><span class="status-badge status-emergency">${ship.emergency_status || 'Emergency'}</span></td>
+                                <td>${ship.anomaly_type || 'Unknown'}</td>
+                                <td>${(ship.latitude || 0).toFixed(3)}, ${(ship.longitude || 0).toFixed(3)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -639,7 +1310,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    renderSpillTable(data.active_spills);
+                    renderSpillTable(data.data);
                 }
             } catch (error) {
                 console.error('Error loading spill data:', error);
@@ -649,8 +1320,20 @@
         function renderSpillTable(spills) {
             const tableContainer = document.getElementById('spillTable');
             
+            console.log('Rendering spill table with data:', spills); // Debug log
+            
             if (spills.length === 0) {
-                tableContainer.innerHTML = '<div style="text-align: center; color: var(--ms-color-neutralSecondary); padding: 20px;">No active spills detected</div>';
+                tableContainer.innerHTML = '<div style="text-align: center; color: var(--ms-color-neutralSecondary); padding: 20px;"><i class="fas fa-oil-can" style="font-size: 2rem; color: var(--success-gradient); margin-bottom: 10px;"></i><br>No active spills detected</div>';
+                return;
+            }
+            
+            // Filter for detected spills and show top 5
+            const detectedSpills = spills.filter(spill => spill.spill_detected === True).slice(0, 5);
+            
+            console.log('Detected spills found:', detectedSpills.length); // Debug log
+            
+            if (detectedSpills.length === 0) {
+                tableContainer.innerHTML = '<div style="text-align: center; color: var(--ms-color-neutralSecondary); padding: 20px;"><i class="fas fa-oil-can" style="font-size: 2rem; color: var(--success-gradient); margin-bottom: 10px;"></i><br>No active spills detected</div>';
                 return;
             }
             
@@ -658,23 +1341,21 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Location</th>
-                            <th>Type</th>
+                            <th>Spill Type</th>
                             <th>Severity</th>
-                            <th>Affected Area</th>
+                            <th>Area</th>
                             <th>Confidence</th>
-                            <th>Volume</th>
+                            <th>Location</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${spills.map(spill => `
+                        ${detectedSpills.map(spill => `
                             <tr>
-                                <td>${spill.location_name}</td>
-                                <td><span class="status-badge status-detected">${spill.spill_type}</span></td>
-                                <td><span class="status-badge ${getSeverityClass(spill.severity_level)}">${spill.severity_level}</span></td>
-                                <td>${spill.affected_area_km2} km²</td>
+                                <td><strong>${spill.spill_type || 'Unknown'}</strong></td>
+                                <td><span class="status-badge ${getSeverityClass(spill.severity_level)}">${spill.severity_level || 'Unknown'}</span></td>
+                                <td>${(spill.affected_area_km2 || 0).toFixed(3)} km²</td>
                                 <td>${(spill.confidence_score * 100).toFixed(1)}%</td>
-                                <td>${spill.estimated_volume_liters.toLocaleString()} L</td>
+                                <td>${(spill.latitude || 0).toFixed(3)}, ${(spill.longitude || 0).toFixed(3)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -684,15 +1365,15 @@
 
         function getSeverityClass(severity) {
             switch (severity) {
-                case 'High': return 'status-emergency';
-                case 'Medium': return 'status-detected';
+                case 'Critical': return 'status-emergency';
+                case 'High': return 'status-detected';
+                case 'Medium': return 'status-warning';
                 default: return 'status-normal';
             }
         }
 
         function formatTime(timestamp) {
-            const date = new Date(timestamp);
-            return date.toLocaleString();
+            return new Date(timestamp).toLocaleTimeString();
         }
 
         function refreshData() {

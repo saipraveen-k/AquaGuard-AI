@@ -19,6 +19,9 @@ from msrest.authentication import CognitiveServicesCredentials
 import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
+from dotenv import load_dotenv
+import openai
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +32,10 @@ class OilSpillDetector:
         self.vision_client = None
         self.spill_classifier = None
         self.scaler = StandardScaler()
+        self.openai_client = None
+        
+        # Load environment variables
+        load_dotenv()
         
         # Model paths
         self.classifier_path = "./models/spill_classifier.pkl"
@@ -44,8 +51,9 @@ class OilSpillDetector:
             'spectral_signature'
         ]
         
-        # Initialize Azure Vision and models
+        # Initialize Azure Vision, OpenAI, and models
         self._initialize_vision_client()
+        self._initialize_openai_client()
         self._initialize_classifier()
     
     def _initialize_vision_client(self):
@@ -62,6 +70,31 @@ class OilSpillDetector:
         except Exception as e:
             logger.error(f"Error initializing Azure Vision: {str(e)}")
             self.vision_client = None
+    
+    def _initialize_openai_client(self):
+        """Initialize Azure OpenAI client for advanced spill analysis"""
+        try:
+            openai_endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
+            openai_key = os.getenv('AZURE_OPENAI_KEY')
+            deployment_name = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
+            
+            if openai_endpoint and openai_key:
+                # Configure OpenAI for Azure
+                openai.api_type = "azure"
+                openai.api_base = openai_endpoint
+                openai.api_version = "2023-12-01-preview"
+                openai.api_key = openai_key
+                
+                self.openai_deployment = deployment_name
+                logger.info("Azure OpenAI client initialized successfully")
+            else:
+                logger.warning("Azure OpenAI credentials not found - using simulated AI responses")
+                self.openai_client = None
+                self.openai_deployment = None
+        except Exception as e:
+            logger.error(f"Error initializing Azure OpenAI: {str(e)}")
+            self.openai_client = None
+            self.openai_deployment = None
     
     def _initialize_classifier(self):
         """Initialize or load the spill classification model"""
@@ -313,7 +346,61 @@ class OilSpillDetector:
         if spill_type == 'None':
             return 'No spill detected - water conditions appear normal'
         
-        # Identify key contributing features
+        # Try to get AI-powered explanation from OpenAI
+        if self.openai_deployment:
+            try:
+                return self._get_ai_explanation(features, spill_type, severity, confidence)
+            except Exception as e:
+                logger.warning(f"AI explanation failed, using fallback: {str(e)}")
+        
+        # Fallback to rule-based explanation
+        return self._generate_rule_based_explanation(features, spill_type, severity, confidence)
+    
+    def _get_ai_explanation(self, features: List[float], spill_type: str, 
+                           severity: str, confidence: float) -> str:
+        """Get AI-powered explanation from Azure OpenAI"""
+        
+        # Prepare context for AI
+        context = f"""
+        AquaGuard AI Spill Detection Analysis:
+        
+        Detection Results:
+        - Spill Type: {spill_type}
+        - Severity: {severity}
+        - Confidence: {confidence:.2%}
+        
+        Technical Features:
+        - Oil Color Intensity: {features[0]:.3f}
+        - Texture Variance: {features[1]:.3f}
+        - Edge Density: {features[2]:.3f}
+        - Water Clarity Index: {features[3]:.3f}
+        - Surface Turbulence: {features[4]:.3f}
+        - Spectral Signature: {features[5]:.3f}
+        
+        Provide a brief, technical explanation (2-3 sentences) of why this spill was detected 
+        and what the key indicators are. Focus on environmental impact and response priorities.
+        """
+        
+        try:
+            response = openai.ChatCompletion.create(
+                deployment_id=self.openai_deployment,
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are an expert marine environmental analyst specializing in oil spill detection and response. Provide concise, technical explanations."},
+                    {"role": "user", "content": context}
+                ],
+                max_tokens=150,
+                temperature=0.3
+            )
+            
+            return response.choices[0].message.content.strip()
+            
+        except Exception as e:
+            logger.error(f"OpenAI API call failed: {str(e)}")
+            raise
+    
+    def _generate_rule_based_explanation(self, features: List[float], spill_type: str,
+                                        severity: str, confidence: float) -> str:
         oil_color = features[0]
         texture = features[1]
         clarity = features[3]

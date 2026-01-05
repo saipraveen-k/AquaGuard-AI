@@ -31,11 +31,11 @@ def get_flood_data():
     """API endpoint for flood prediction data"""
     try:
         df = pd.read_csv(f"{DATA_DIR}/flood_predictions.csv")
-        # Get latest data
-        latest_data = df.tail(10).to_dict('records')
+        # Get recent flood predictions
+        recent_floods = df.tail(10).to_dict('records')
         return jsonify({
             'success': True,
-            'data': latest_data,
+            'data': recent_floods,
             'timestamp': datetime.now().isoformat()
         })
     except Exception as e:
@@ -47,13 +47,11 @@ def get_ship_data():
     """API endpoint for ship emergency data"""
     try:
         df = pd.read_csv(f"{DATA_DIR}/ship_emergencies.csv")
-        # Get emergency ships
-        emergency_ships = df[df['emergency_status'] == 'Emergency'].tail(5).to_dict('records')
-        all_ships = df.tail(20).to_dict('records')
+        # Get recent ship data
+        recent_ships = df.tail(20).to_dict('records')
         return jsonify({
             'success': True,
-            'emergency_ships': emergency_ships,
-            'all_ships': all_ships,
+            'data': recent_ships,
             'timestamp': datetime.now().isoformat()
         })
     except Exception as e:
@@ -65,11 +63,11 @@ def get_spill_data():
     """API endpoint for spill detection data"""
     try:
         df = pd.read_csv(f"{DATA_DIR}/spill_detections.csv")
-        # Get active spills
-        active_spills = df[df['spill_detected'] == True].tail(5).to_dict('records')
+        # Get recent spill detections
+        recent_spills = df.tail(10).to_dict('records')
         return jsonify({
             'success': True,
-            'active_spills': active_spills,
+            'data': recent_spills,
             'timestamp': datetime.now().isoformat()
         })
     except Exception as e:

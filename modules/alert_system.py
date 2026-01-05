@@ -9,6 +9,9 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any
 import uuid
 from enum import Enum
+from dotenv import load_dotenv
+import openai
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +32,15 @@ class AlertManager:
     
     def __init__(self):
         self.alerts = []
+        self.alert_rules = self._load_alert_rules()
+        self.openai_deployment = None
+        
+        # Load environment variables
+        load_dotenv()
+        
+        # Initialize OpenAI for intelligent alert generation
+        self._initialize_openai()
+        
         self.alert_thresholds = {
             'flood_risk': 70,  # percentage
             'ship_anomaly': 0.8,  # anomaly score
@@ -40,6 +52,51 @@ class AlertManager:
         self.alert_cooldown_minutes = 15
         
         logger.info("Alert Manager initialized")
+    
+    def _initialize_openai(self):
+        """Initialize Azure OpenAI client for intelligent alert generation"""
+        try:
+            openai_endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
+            openai_key = os.getenv('AZURE_OPENAI_KEY')
+            deployment_name = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
+            
+            if openai_endpoint and openai_key:
+                # Configure OpenAI for Azure
+                openai.api_type = "azure"
+                openai.api_base = openai_endpoint
+                openai.api_version = "2023-12-01-preview"
+                openai.api_key = openai_key
+                
+                self.openai_deployment = deployment_name
+                logger.info("Azure OpenAI client initialized for alert system")
+            else:
+                logger.warning("Azure OpenAI credentials not found - using standard alert messages")
+                self.openai_deployment = None
+        except Exception as e:
+            logger.error(f"Error initializing Azure OpenAI for alerts: {str(e)}")
+            self.openai_deployment = None
+    
+    def _load_alert_rules(self) -> Dict:
+        """Load alert configuration rules"""
+        return {
+            'flood': {
+                'critical_threshold': 90,
+                'high_threshold': 70,
+                'medium_threshold': 50,
+                'cooldown_minutes': 30
+            },
+            'ship': {
+                'critical_anomaly_score': -0.8,
+                'high_anomaly_score': -0.5,
+                'cooldown_minutes': 15
+            },
+            'spill': {
+                'critical_confidence': 0.8,
+                'high_confidence': 0.7,
+                'medium_confidence': 0.6,
+                'cooldown_minutes': 20
+            }
+        }
     
     def check_alerts(self, flood_predictions: List[Dict], 
                     ship_emergencies: List[Dict], 
@@ -208,6 +265,14 @@ class AlertManager:
         risk_level = prediction['risk_level']
         time_to_flood = prediction['time_to_flood_hours']
         
+        # Try AI-powered message generation
+        if self.openai_deployment:
+            try:
+                return self._get_ai_flood_message(prediction)
+            except Exception as e:
+                logger.warning(f"AI flood message failed, using fallback: {str(e)}")
+        
+        # Fallback to rule-based messages
         if risk_level == 'High' and time_to_flood <= 6:
             return f"CRITICAL: Flood risk {prediction['risk_percentage']}%. Expected flooding in {time_to_flood:.1f} hours. Immediate action required."
         elif risk_level == 'Medium':
@@ -220,6 +285,14 @@ class AlertManager:
         anomaly_type = ship['anomaly_type']
         ship_name = ship['ship_name']
         
+        # Try AI-powered message generation
+        if self.openai_deployment:
+            try:
+                return self._get_ai_ship_message(ship)
+            except Exception as e:
+                logger.warning(f"AI ship message failed, using fallback: {str(e)}")
+        
+        # Fallback to rule-based message
         return f"EMERGENCY: {ship_name} showing {anomaly_type.replace('_', ' ').title()}. Last known position: {ship['latitude']:.4f}, {ship['longitude']:.4f}. Immediate response required."
     
     def _generate_spill_alert_message(self, detection: Dict) -> str:
@@ -228,7 +301,104 @@ class AlertManager:
         severity = detection['severity_level']
         area = detection['affected_area_km2']
         
+        # Try AI-powered message generation
+        if self.openai_deployment:
+            try:
+                return self._get_ai_spill_message(detection)
+            except Exception as e:
+                logger.warning(f"AI spill message failed, using fallback: {str(e)}")
+        
+        # Fallback to rule-based message
         return f"ALERT: {severity} {spill_type} spill detected. Affected area: {area:.3f} km². Confidence: {detection['confidence_score']:.1%}. Deploy containment team."
+    
+    def _get_ai_flood_message(self, prediction: Dict) -> str:
+        """Get AI-powered flood alert message"""
+        context = f"""
+        AquaGuard AI Flood Alert Analysis:
+        
+        Risk Assessment:
+        - Location: {prediction['location_name']}
+        - Risk Level: {prediction['risk_level']} ({prediction['risk_percentage']}%)
+        - Time to Flooding: {prediction['time_to_flood_hours']:.1f} hours
+        - Rainfall: {prediction.get('rainfall_mm_per_hour', 'N/A')} mm/h
+        - River Level: {prediction.get('river_level_meters', 'N/A')} meters
+        
+        Generate a concise, actionable flood alert message (1-2 sentences) for emergency responders.
+        Include urgency level and recommended immediate actions.
+        """
+        
+        response = openai.ChatCompletion.create(
+            deployment_id=self.openai_deployment,
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are an emergency management coordinator. Generate clear, urgent alert messages for flood situations."},
+                {"role": "user", "content": context}
+            ],
+            max_tokens=100,
+            temperature=0.3
+        )
+        
+        return response.choices[0].message.content.strip()
+    
+    def _get_ai_ship_message(self, ship: Dict) -> str:
+        """Get AI-powered ship emergency alert message"""
+        context = f"""
+        AquaGuard AI Ship Emergency Analysis:
+        
+        Emergency Details:
+        - Vessel: {ship['ship_name']} ({ship['ship_type']})
+        - Anomaly Type: {ship['anomaly_type']}
+        - Anomaly Score: {ship['anomaly_score']}
+        - Current Speed: {ship['speed_knots']} knots
+        - Position: {ship['latitude']:.4f}, {ship['longitude']:.4f}
+        - Emergency Probability: {ship.get('emergency_probability', 'N/A')}
+        
+        Generate a concise, actionable ship emergency alert message (1-2 sentences) for maritime rescue coordination.
+        Include vessel status and immediate response requirements.
+        """
+        
+        response = openai.ChatCompletion.create(
+            deployment_id=self.openai_deployment,
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a maritime emergency coordinator. Generate clear, urgent alert messages for ship emergencies."},
+                {"role": "user", "content": context}
+            ],
+            max_tokens=100,
+            temperature=0.3
+        )
+        
+        return response.choices[0].message.content.strip()
+    
+    def _get_ai_spill_message(self, detection: Dict) -> str:
+        """Get AI-powered spill alert message"""
+        context = f"""
+        AquaGuard AI Spill Alert Analysis:
+        
+        Spill Details:
+        - Type: {detection['spill_type']}
+        - Severity: {detection['severity_level']}
+        - Affected Area: {detection['affected_area_km2']:.3f} km²
+        - Confidence: {detection['confidence_score']:.1%}
+        - Estimated Volume: {detection.get('estimated_volume_liters', 'N/A')} liters
+        - Source: {detection.get('source_type', 'N/A')}
+        
+        Generate a concise, actionable spill alert message (1-2 sentences) for environmental response teams.
+        Include containment priorities and environmental impact concerns.
+        """
+        
+        response = openai.ChatCompletion.create(
+            deployment_id=self.openai_deployment,
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are an environmental emergency coordinator. Generate clear, urgent alert messages for oil/chemical spills."},
+                {"role": "user", "content": context}
+            ],
+            max_tokens=100,
+            temperature=0.3
+        )
+        
+        return response.choices[0].message.content.strip()
     
     def _get_required_actions(self, alert_type: AlertType, level: AlertLevel) -> List[str]:
         """Get required actions based on alert type and level"""
