@@ -19,7 +19,7 @@ app = Flask(__name__, template_folder="../templates")
 CORS(app)  # Enable CORS for Azure App Service
 
 # Data paths
-DATA_DIR = "../data/outputs"
+DATA_DIR = "./data/outputs"
 
 @app.route('/')
 def dashboard():

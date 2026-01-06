@@ -220,7 +220,7 @@ class FloodPredictor:
         
         feature_importance = {}
         for i, feature_name in enumerate(self.feature_names):
-            # FIXED: Convert numpy float to Python float
+            # FIXED: Convert numpy float to Python float and handle indexing properly
             importance_value = float(importances[i])
             feature_importance[feature_name] = round(importance_value, 3)
         
