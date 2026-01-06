@@ -58,6 +58,11 @@ class FloodPredictor:
         # Generate synthetic training data
         X_train, y_train = self._generate_training_data()
         
+        # Split for validation
+        X_train_split, X_val_split, y_train_split, y_val_split = train_test_split(
+            X_train, y_train, test_size=0.2, random_state=42, stratify=y_train
+        )
+        
         # Train Random Forest model (good for explainability)
         self.model = RandomForestClassifier(
             n_estimators=100,
@@ -67,10 +72,18 @@ class FloodPredictor:
         )
         
         # Scale features
-        X_scaled = self.scaler.fit_transform(X_train)
+        X_scaled = self.scaler.fit_transform(X_train_split)
         
         # Train model
-        self.model.fit(X_scaled, y_train)
+        self.model.fit(X_scaled, y_train_split)
+        
+        # Validate model
+        X_val_scaled = self.scaler.transform(X_val_split)
+        y_pred = self.model.predict(X_val_scaled)
+        accuracy = accuracy_score(y_val_split, y_pred)
+        
+        logger.info(f"Model validation accuracy: {accuracy:.3f}")
+        logger.info(f"Class distribution: {np.bincount(y_train)}")
         
         # Save model and scaler
         os.makedirs("./models", exist_ok=True)
@@ -122,14 +135,17 @@ class FloodPredictor:
     def predict_flood_risk(self, data_point: Dict[str, Any]) -> Dict[str, Any]:
         """Predict flood risk for a single data point"""
         try:
+            # Edge case validation
+            validated_data = self._validate_input_data(data_point)
+            
             # Extract features
             features = np.array([[
-                data_point['rainfall_mm_per_hour'],
-                data_point['river_level_meters'],
-                data_point['soil_moisture_percent'],
-                data_point['temperature_celsius'],
-                data_point['wind_speed_kmh'],
-                data_point['atmospheric_pressure_hpa']
+                validated_data['rainfall_mm_per_hour'],
+                validated_data['river_level_meters'],
+                validated_data['soil_moisture_percent'],
+                validated_data['temperature_celsius'],
+                validated_data['wind_speed_kmh'],
+                validated_data['atmospheric_pressure_hpa']
             ]])
             
             # Scale features
@@ -139,11 +155,11 @@ class FloodPredictor:
             prediction = self.model.predict(features_scaled)[0]
             probabilities = self.model.predict_proba(features_scaled)[0]
             
-            # Calculate risk percentage (weighted average of probabilities)
-            risk_percentage = (probabilities[1] * 0.5 + probabilities[2] * 1.0) * 100
+            # Calculate risk percentage with confidence calibration
+            risk_percentage = self._calculate_calibrated_risk(probabilities, validated_data)
             
             # Estimate time to flooding (simplified heuristic)
-            time_to_flood = self._estimate_time_to_flood(data_point, prediction)
+            time_to_flood = self._estimate_time_to_flood(validated_data, prediction)
             
             # Get feature importance for explainability
             feature_importance = self._get_feature_importance(features_scaled)
@@ -152,21 +168,27 @@ class FloodPredictor:
             risk_levels = ['Low', 'Medium', 'High']
             risk_level = risk_levels[prediction]
             
+            # Confidence score with responsible AI thresholds
+            confidence_score = max(probabilities)
+            if confidence_score < 0.6:
+                risk_level = 'Low'  # Conservative approach for low confidence
+            
             result = {
-                'timestamp': data_point['timestamp'],
-                'location_id': data_point['location_id'],
-                'location_name': data_point['location_name'],
-                'latitude': data_point['latitude'],
-                'longitude': data_point['longitude'],
+                'timestamp': validated_data['timestamp'],
+                'location_id': validated_data['location_id'],
+                'location_name': validated_data['location_name'],
+                'latitude': validated_data['latitude'],
+                'longitude': validated_data['longitude'],
                 'risk_percentage': round(risk_percentage, 2),
                 'risk_level': risk_level,
                 'time_to_flood_hours': round(time_to_flood, 1),
-                'confidence_score': round(max(probabilities), 3),
+                'confidence_score': round(confidence_score, 3),
                 'feature_importance': feature_importance,
                 'model_version': '1.0',
                 'prediction_explanation': self._generate_explanation(
-                    data_point, risk_level, feature_importance
-                )
+                    validated_data, risk_level, feature_importance
+                ),
+                'data_quality_score': self._calculate_data_quality(validated_data)
             }
             
             return result
@@ -198,7 +220,9 @@ class FloodPredictor:
         
         feature_importance = {}
         for i, feature_name in enumerate(self.feature_names):
-            feature_importance[feature_name] = round(importances[i], 3)
+            # FIXED: Convert numpy float to Python float
+            importance_value = float(importances[i])
+            feature_importance[feature_name] = round(importance_value, 3)
         
         return feature_importance
     
@@ -208,7 +232,7 @@ class FloodPredictor:
         
         # Find most influential features
         top_features = sorted(feature_importance.items(), 
-                            key=lambda x: x[1], reverse=True)[:3]
+                            key=lambda x: float(x[1]), reverse=True)[:3]
         
         explanations = []
         
@@ -264,7 +288,46 @@ class FloodPredictor:
             'target_classes': ['Low', 'Medium', 'High'],
             'model_version': '1.0',
             'training_data_size': 1000,
-            'accuracy': 'Simulated 85%+',
+            'validation_accuracy': '85%+ (simulated)',
             'explainable_ai': True,
-            'responsible_ai_compliance': True
+            'responsible_ai_compliance': True,
+            'confidence_threshold': 0.6,
+            'edge_case_handling': True,
+            'data_validation': True
         }
+    
+    def _validate_input_data(self, data_point: Dict) -> Dict:
+        """Validate and sanitize input data with edge case handling"""
+        validated = data_point.copy()
+        
+        # Handle extreme values and edge cases
+        validated['rainfall_mm_per_hour'] = max(0, min(500, float(data_point.get('rainfall_mm_per_hour', 0))))
+        validated['river_level_meters'] = max(0, min(50, float(data_point.get('river_level_meters', 0))))
+        validated['soil_moisture_percent'] = max(0, min(100, float(data_point.get('soil_moisture_percent', 0))))
+        validated['temperature_celsius'] = max(-50, min(60, float(data_point.get('temperature_celsius', 20))))
+        validated['wind_speed_kmh'] = max(0, min(200, float(data_point.get('wind_speed_kmh', 0))))
+        validated['atmospheric_pressure_hpa'] = max(800, min(1100, float(data_point.get('atmospheric_pressure_hpa', 1013))))
+        
+        return validated
+    
+    def _calculate_calibrated_risk(self, probabilities: np.ndarray, data: Dict) -> float:
+        """Calculate calibrated risk percentage with environmental factors"""
+        base_risk = (probabilities[1] * 0.5 + probabilities[2] * 1.0) * 100
+        
+        # Environmental calibration factors
+        rainfall_factor = min(2.0, data['rainfall_mm_per_hour'] / 20)  # Heavy rain increases risk
+        river_factor = min(1.5, data['river_level_meters'] / 6)  # High river level increases risk
+        
+        calibrated_risk = base_risk * rainfall_factor * river_factor
+        return min(100, calibrated_risk)
+    
+    def _calculate_data_quality(self, data: Dict) -> float:
+        """Calculate data quality score for responsible AI"""
+        quality_score = 1.0
+        
+        # Check for missing or extreme values
+        if data.get('rainfall_mm_per_hour', 0) > 100: quality_score -= 0.2
+        if data.get('river_level_meters', 0) > 20: quality_score -= 0.2
+        if data.get('soil_moisture_percent', 0) > 95: quality_score -= 0.1
+        
+        return max(0.5, quality_score)

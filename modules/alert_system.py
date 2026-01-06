@@ -554,26 +554,36 @@ class AlertManager:
         }
     
     def _update_alert_history(self, new_alerts: List[Dict]):
-        """Update alert history for deduplication"""
+        """Update alert history for deduplication with responsible AI logic"""
         current_time = datetime.now()
         
         for alert in new_alerts:
-            alert_key = f"{alert['alert_type']}_{alert['location']['name']}"
+            # Create more specific alert key for better deduplication
+            alert_key = f"{alert['alert_type']}_{alert['location']['name']}_{alert['level']}"
             
             # Check if similar alert was recently generated
             if alert_key in self.recent_alerts:
                 last_time = self.recent_alerts[alert_key]
                 time_diff = (current_time - last_time).total_seconds() / 60
                 
-                if time_diff < self.alert_cooldown_minutes:
+                # Dynamic cooldown based on alert severity
+                cooldown_minutes = {
+                    'Critical': 5,   # Allow critical alerts more frequently
+                    'High': 10,
+                    'Medium': 15,
+                    'Low': 20
+                }.get(alert['level'], self.alert_cooldown_minutes)
+                
+                if time_diff < cooldown_minutes:
                     # Skip this alert to avoid duplication
+                    logger.info(f"Alert deduplicated: {alert['title']} (cooldown: {cooldown_minutes}min)")
                     continue
             
             # Update recent alerts
             self.recent_alerts[alert_key] = current_time
         
-        # Clean old entries
-        cutoff_time = current_time - timedelta(hours=1)
+        # Clean old entries (keep only last 2 hours)
+        cutoff_time = current_time - timedelta(hours=2)
         self.recent_alerts = {
             k: v for k, v in self.recent_alerts.items() 
             if v > cutoff_time

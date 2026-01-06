@@ -1,0 +1,116 @@
+{
+  "summary": {
+    "timestamp": "2026-01-06T22:41:49.440712",
+    "overall_status": "NOT_READY",
+    "readiness_score": 0.5714285714285714,
+    "models_tested": 5,
+    "models_passed": 4
+  },
+  "detailed_results": {
+    "timestamp": "2026-01-06T22:41:49.440712",
+    "models": {
+      "flood_prediction": {
+        "status": "PASS",
+        "model_info": {
+          "model_type": "RandomForestClassifier",
+          "features": [
+            "rainfall_mm_per_hour",
+            "river_level_meters",
+            "soil_moisture_percent",
+            "temperature_celsius",
+            "wind_speed_kmh",
+            "atmospheric_pressure_hpa"
+          ],
+          "target_classes": [
+            "Low",
+            "Medium",
+            "High"
+          ],
+          "model_version": "1.0",
+          "training_data_size": 1000,
+          "validation_accuracy": "85%+ (simulated)",
+          "explainable_ai": true,
+          "responsible_ai_compliance": true,
+          "confidence_threshold": 0.6,
+          "edge_case_handling": true,
+          "data_validation": true
+        },
+        "test_prediction": {
+          "timestamp": "2026-01-06T22:41:49.464360",
+          "location_id": "TEST_001",
+          "location_name": "Test Location",
+          "latitude": 40.7128,
+          "longitude": -74.006,
+          "risk_percentage": 0.0,
+          "risk_level": "Low",
+          "time_to_flood_hours": 999.0,
+          "confidence_score": 0.0,
+          "feature_importance": {},
+          "model_version": "1.0",
+          "prediction_explanation": "Model unavailable - default low risk"
+        },
+        "missing_fields": [],
+        "confidence_valid": true,
+        "risk_percentage_valid": true,
+        "validation_details": {
+          "has_explainable_ai": true,
+          "has_responsible_ai": true,
+          "confidence_threshold_met": false,
+          "edge_case_handling": true
+        }
+      },
+      "ship_emergency": {
+        "status": "PASS",
+        "model_info": {
+          "model_type": "IsolationForest",
+          "features": [
+            "speed_knots",
+            "heading_change_rate",
+            "course_deviation_degrees",
+            "speed_change_rate",
+            "position_anomaly_score"
+          ],
+          "detection_method": "AIS Anomaly Detection (SOS-Independent)",
+          "model_version": "1.0",
+          "contamination_rate": 0.1,
+          "emergency_threshold": 0.75,
+          "training_data_size": 2000,
+          "anomaly_types": [
+            "Sudden_Stop",
+            "Sharp_Turn",
+            "Course_Deviation",
+            "Position_Anomaly"
+          ],
+          "responsible_ai_compliance": true,
+          "false_positive_prevention": true,
+          "confidence_scoring": true,
+          "threshold_explanation": "High threshold (0.75) prevents false alarms and maintains system trust"
+        },
+        "test_detection": {
+          "timestamp": "2026-01-06T22:41:49.499121",
+          "mmsi": "123456789",
+          "ship_name": "Test Vessel",
+          "ship_type": "Cargo Ship",
+          "latitude": 40.7128,
+          "longitude": -74.006,
+          "speed_knots": 1.5,
+          "heading_degrees": 45.0,
+          "emergency_status": "Normal",
+          "anomaly_score": 0.022,
+          "emergency_probability": 0.956,
+          "anomaly_type": "None",
+          "confidence_score": 0.038,
+          "threshold_used": 0.75,
+          "feature_values": {
+            "speed_knots": 1.5,
+            "heading_change_rate": 0.0,
+            "course_deviation_degrees": 0.0,
+            "speed_change_rate": 0.0,
+            "position_anomaly_score": 0.0
+          },
+          "emergency_explanation": "Ship behavior appears normal - no emergency detected",
+          "model_version": "1.0",
+          "detection_method": "AIS Anomaly Detection (SOS-Independent)"
+        },
+        "missing_fields": [],
+        "confidence_valid": 

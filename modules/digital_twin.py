@@ -208,9 +208,9 @@ class DigitalTwinSimulator:
                         # Spread to adjacent cells in the direction of wind/current
                         spread_rate = 0.2  # 20% spread per step
                         
-                        # Primary spread direction
-                        primary_di = int(np.sign(total_effect_y))
-                        primary_dj = int(np.sign(total_effect_x))
+                        # Primary spread direction - FIXED: Ensure integer conversion
+                        primary_di = int(round(np.sign(total_effect_y)))
+                        primary_dj = int(round(np.sign(total_effect_x)))
                         
                         # Secondary spread (diffusion)
                         for di in [-1, 0, 1]:
@@ -225,8 +225,11 @@ class DigitalTwinSimulator:
                                     if di == primary_di and dj == primary_dj:
                                         spread_multiplier = 2.0
                                     
-                                    spread_prob = spread_rate * spread_multiplier / (abs(di) + abs(dj))
-                                    new_grid[ni, nj] = min(1.0, new_grid[ni, nj] + spill_grid[i, j] * spread_prob)
+                                    # FIXED: Ensure denominator is never zero
+                                    denominator = abs(di) + abs(dj)
+                                    if denominator > 0:
+                                        spread_prob = spread_rate * spread_multiplier / denominator
+                                        new_grid[ni, nj] = min(1.0, new_grid[ni, nj] + spill_grid[i, j] * spread_prob)
             
             spill_grid = new_grid
         

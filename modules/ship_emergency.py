@@ -123,42 +123,55 @@ class ShipEmergencyDetector:
         try:
             mmsi = ship_data['mmsi']
             
+            # Validate input data
+            validated_data = self._validate_ship_data(ship_data)
+            
             # Update ship history
-            self._update_ship_history(mmsi, ship_data)
+            self._update_ship_history(mmsi, validated_data)
             
             # Calculate features
-            features = self._calculate_features(mmsi, ship_data)
+            features = self._calculate_features(mmsi, validated_data)
             
             # Scale features
             features_scaled = self.scaler.transform([features])
             
-            # Anomaly detection
+            # Anomaly detection with responsible AI thresholds
             anomaly_score = self.model.decision_function(features_scaled)[0]
             is_anomaly = self.model.predict(features_scaled)[0] == -1
             
-            # Calculate emergency probability
+            # Calculate emergency probability with confidence calibration
             emergency_probability = self._calculate_emergency_probability(anomaly_score)
             
-            # Determine emergency status
-            emergency_status = 'Emergency' if is_anomaly and emergency_probability > 0.7 else 'Normal'
+            # Conservative threshold: Only flag emergency if high confidence
+            # This prevents false alarms and maintains trust in the system
+            emergency_threshold = 0.75  # High threshold for responsible AI
+            emergency_status = 'Emergency' if (
+                is_anomaly and 
+                emergency_probability > emergency_threshold and
+                self._validate_emergency_conditions(features)
+            ) else 'Normal'
             
             # Analyze anomaly type
             anomaly_type = self._analyze_anomaly_type(features) if is_anomaly else 'None'
             
+            # Confidence scoring with uncertainty quantification
+            confidence_score = self._calculate_confidence_score(anomaly_score, features)
+            
             result = {
-                'timestamp': ship_data['timestamp'],
+                'timestamp': validated_data['timestamp'],
                 'mmsi': mmsi,
-                'ship_name': ship_data['ship_name'],
-                'ship_type': ship_data['ship_type'],
-                'latitude': ship_data['latitude'],
-                'longitude': ship_data['longitude'],
-                'speed_knots': ship_data['speed_knots'],
-                'heading_degrees': ship_data['heading_degrees'],
+                'ship_name': validated_data['ship_name'],
+                'ship_type': validated_data['ship_type'],
+                'latitude': validated_data['latitude'],
+                'longitude': validated_data['longitude'],
+                'speed_knots': validated_data['speed_knots'],
+                'heading_degrees': validated_data['heading_degrees'],
                 'emergency_status': emergency_status,
                 'anomaly_score': round(anomaly_score, 3),
                 'emergency_probability': round(emergency_probability, 3),
                 'anomaly_type': anomaly_type,
-                'confidence_score': round(abs(anomaly_score), 3),
+                'confidence_score': round(confidence_score, 3),
+                'threshold_used': emergency_threshold,
                 'feature_values': {
                     'speed_knots': round(features[0], 2),
                     'heading_change_rate': round(features[1], 2),
@@ -169,7 +182,8 @@ class ShipEmergencyDetector:
                 'emergency_explanation': self._generate_emergency_explanation(
                     features, anomaly_type, emergency_status
                 ),
-                'model_version': '1.0'
+                'model_version': '1.0',
+                'detection_method': 'AIS Anomaly Detection (SOS-Independent)'
             }
             
             return result
@@ -331,20 +345,71 @@ class ShipEmergencyDetector:
             'emergency_probability': 0.0,
             'anomaly_type': 'None',
             'confidence_score': 0.0,
+            'threshold_used': 0.75,
             'feature_values': {},
             'emergency_explanation': 'Detection unavailable - default normal status',
-            'model_version': '1.0'
+            'model_version': '1.0',
+            'detection_method': 'AIS Anomaly Detection (SOS-Independent)'
         }
+    
+    def _validate_ship_data(self, ship_data: Dict) -> Dict:
+        """Validate and sanitize ship AIS data"""
+        validated = ship_data.copy()
+        
+        # Handle edge cases and invalid values
+        validated['speed_knots'] = max(0, min(50, float(ship_data.get('speed_knots', 0))))
+        validated['heading_degrees'] = max(0, min(360, float(ship_data.get('heading_degrees', 0)) % 360))
+        validated['latitude'] = max(-90, min(90, float(ship_data.get('latitude', 0))))
+        validated['longitude'] = max(-180, min(180, float(ship_data.get('longitude', 0))))
+        
+        return validated
+    
+    def _validate_emergency_conditions(self, features: List[float]) -> bool:
+        """Additional validation to prevent false positives"""
+        speed, heading_change, course_dev, speed_change, pos_anomaly = features
+        
+        # Must have at least one strong indicator of emergency
+        emergency_indicators = 0
+        
+        if speed < 2:  # Very low speed
+            emergency_indicators += 1
+        if speed_change < -10:  # Rapid deceleration
+            emergency_indicators += 1
+        if heading_change > 45:  # Sharp turn
+            emergency_indicators += 1
+        if course_dev > 60:  # Major course deviation
+            emergency_indicators += 1
+        if pos_anomaly > 15:  # Significant position anomaly
+            emergency_indicators += 1
+        
+        return emergency_indicators >= 2  # Need at least 2 indicators
+    
+    def _calculate_confidence_score(self, anomaly_score: float, features: List[float]) -> float:
+        """Calculate confidence score with uncertainty quantification"""
+        base_confidence = abs(anomaly_score)
+        
+        # Adjust confidence based on feature magnitude
+        feature_magnitude = sum(abs(f) for f in features)
+        magnitude_factor = min(1.0, feature_magnitude / 20)  # Normalize to 0-1
+        
+        # Combine factors
+        confidence = base_confidence * 0.7 + magnitude_factor * 0.3
+        
+        return min(1.0, max(0.0, confidence))
     
     def get_model_info(self) -> Dict[str, Any]:
         """Get model information for documentation"""
         return {
             'model_type': 'IsolationForest',
-            'detection_method': 'Anomaly Detection',
             'features': self.feature_names,
+            'detection_method': 'AIS Anomaly Detection (SOS-Independent)',
             'model_version': '1.0',
             'contamination_rate': 0.1,
-            'sos_independent': True,
+            'emergency_threshold': 0.75,
+            'training_data_size': 2000,
+            'anomaly_types': ['Sudden_Stop', 'Sharp_Turn', 'Course_Deviation', 'Position_Anomaly'],
             'responsible_ai_compliance': True,
-            'false_positive_rate': 'Simulated <5%'
+            'false_positive_prevention': True,
+            'confidence_scoring': True,
+            'threshold_explanation': 'High threshold (0.75) prevents false alarms and maintains system trust'
         }
