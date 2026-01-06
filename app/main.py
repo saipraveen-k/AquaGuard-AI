@@ -6,12 +6,16 @@ This module coordinates all AI modules and manages data flow for the demo.
 """
 
 import os
+import sys
 import json
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Any
 import asyncio
 import pandas as pd
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import our custom modules
 from modules.flood_prediction import FloodPredictor

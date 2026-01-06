@@ -6,7 +6,7 @@ Debug Oil Spill Detection NumPy Issues
 import sys
 import numpy as np
 from datetime import datetime
-sys.path.append('.')
+sys.path.append('..')  # Add parent directory to path
 
 def debug_numpy_issue():
     print('🔍 DEBUGGING NUMPY ISSUES IN SPILL DETECTION')

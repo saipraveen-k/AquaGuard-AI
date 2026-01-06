@@ -13,6 +13,7 @@ import sys
 import os
 
 # Add modules to path
+sys.path.append('..')
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from modules.flood_prediction import FloodPredictor

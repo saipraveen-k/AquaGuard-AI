@@ -7,7 +7,7 @@ Comprehensive verification of the spill detection module for Imagine Cup readine
 import sys
 import numpy as np
 from datetime import datetime
-sys.path.append('.')
+sys.path.append('..')  # Add parent directory to path
 
 def main():
     print('🛢️ OIL & CHEMICAL SPILL DETECTION - COMPREHENSIVE VERIFICATION')
