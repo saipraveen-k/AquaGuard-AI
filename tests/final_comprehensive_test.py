@@ -8,6 +8,9 @@ import sys
 import subprocess
 import time
 
+# Add project root to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 def main():
     print("🎯 FINAL COMPREHENSIVE SYSTEM TEST")
     print("=" * 60)

@@ -8,6 +8,9 @@ import sys
 import subprocess
 from datetime import datetime
 
+# Add project root to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 def check_paths():
     """Verify all file paths are working correctly"""
     print("🔍 VERIFYING FILE PATHS AND STRUCTURE")

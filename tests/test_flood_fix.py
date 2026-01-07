@@ -3,11 +3,14 @@
 Test fixed flood prediction module
 """
 
+import os
 import sys
-sys.path.append('.')
+from datetime import datetime
+
+# Add project root to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from modules.flood_prediction import FloodPredictor
-from datetime import datetime
 
 def test_flood_prediction():
     """Test the fixed flood prediction module"""

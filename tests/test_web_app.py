@@ -8,6 +8,9 @@ import sys
 import requests
 import time
 
+# Add project root to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 def test_web_app():
     """Test web app API endpoints"""
     print("🌐 TESTING WEB APP API")
