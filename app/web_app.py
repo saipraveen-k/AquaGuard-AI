@@ -36,7 +36,7 @@ def enhanced_dashboard():
 def get_flood_data():
     """API endpoint for flood prediction data"""
     try:
-        df = pd.read_csv(f"{DATA_DIR}/flood_predictions.csv")
+        df = pd.read_csv(f"{DATA_DIR}/flood_predicitions.csv")
         
         # Simulate realistic variation if data is flat
         if len(df) > 0:
@@ -91,12 +91,12 @@ def get_flood_data():
 def get_ship_data():
     """API endpoint for ship emergency data"""
     try:
-        df = pd.read_csv(f"{DATA_DIR}/ship_emergencies.csv")
+        df = pd.read_csv(f"{DATA_DIR}/ship_emergenices.csv")
         # Get recent ship data
         recent_ships = df.tail(10).to_dict('records')
         # Calculate statistics
         total_ships = len(df)
-        emergency_count = len(df[df['emergency_status'] == 'Emergency'])
+        emergency_count = len(df[df['emergency_status'] == 'Alert'])
         normal_count = len(df[df['emergency_status'] == 'Normal'])
         
         return jsonify({
@@ -273,8 +273,8 @@ def get_kpi_summary():
     """API endpoint for KPI summary"""
     try:
         # Load all data
-        flood_df = pd.read_csv(f"{DATA_DIR}/flood_predictions.csv")
-        ship_df = pd.read_csv(f"{DATA_DIR}/ship_emergencies.csv")
+        flood_df = pd.read_csv(f"{DATA_DIR}/flood_predicitions.csv")
+        ship_df = pd.read_csv(f"{DATA_DIR}/ship_emergenices.csv")
         spill_df = pd.read_csv(f"{DATA_DIR}/spill_detections.csv")
         alerts_df = pd.read_csv(f"{DATA_DIR}/alerts.csv")
         
@@ -290,9 +290,9 @@ def get_kpi_summary():
                 'trend': 'increasing'  # Justified by chart showing peaks at ~25%
             },
             'ship_emergencies': {
-                'active': int(len(ship_df[ship_df['emergency_status'] == 'Emergency'])),
+                'active': int(len(ship_df[ship_df['emergency_status'] == 'Alert'])),
                 'total_monitored': int(len(ship_df['mmsi'].unique())),
-                'anomaly_rate': float(len(ship_df[ship_df['emergency_status'] == 'Emergency']) / len(ship_df) * 100) if not ship_df.empty else 0
+                'anomaly_rate': float(len(ship_df[ship_df['emergency_status'] == 'Alert']) / len(ship_df) * 100) if not ship_df.empty else 0
             },
             'spill_detections': {
                 'active': int(len(spill_df[spill_df['spill_detected'] == True])),
@@ -351,8 +351,8 @@ def get_map_data():
     """API endpoint for map visualization data"""
     try:
         # Load recent data for map visualization
-        flood_df = pd.read_csv(f"{DATA_DIR}/flood_predictions.csv")
-        ship_df = pd.read_csv(f"{DATA_DIR}/ship_emergencies.csv")
+        flood_df = pd.read_csv(f"{DATA_DIR}/flood_predicitions.csv")
+        ship_df = pd.read_csv(f"{DATA_DIR}/ship_emergenices.csv")
         spill_df = pd.read_csv(f"{DATA_DIR}/spill_detections.csv")
         
         # Add realistic monitoring stations and zones
@@ -422,8 +422,8 @@ def get_performance_metrics():
         
         # Load data files
         data_files = [
-            'flood_predictions.csv',
-            'ship_emergencies.csv', 
+            'flood_predicitions.csv',
+            'ship_emergenices.csv', 
             'spill_detections.csv',
             'alerts.csv',
             'digital_twin.csv'

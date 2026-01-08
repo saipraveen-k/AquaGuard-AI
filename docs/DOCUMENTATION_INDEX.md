@@ -11,6 +11,7 @@
 ### 📖 **Essential Reading (Start Here)**
 - **[README.md](README.md)** - Project overview & introduction
 - **[TECHNICAL_CLEANUP_REPORT.md](TECHNICAL_CLEANUP_REPORT.md)** - System paths verification & cleanup
+- **[CSV_DATA_UPDATE_REPORT.md](CSV_DATA_UPDATE_REPORT.md)** - CSV data update & integration
 - **[DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** - This file guide & usage
 
 ### 🏗️ **Architecture & System Design**
@@ -47,6 +48,30 @@
 - Installation and setup instructions
 - Imagine Cup competition details
 **Size**: 21,525 bytes | **Last Updated**: Latest comprehensive version
+
+---
+
+### 🔧 **SYSTEM HEALTH & DATA UPDATES**
+
+#### 🛠️ [TECHNICAL_CLEANUP_REPORT.md](TECHNICAL_CLEANUP_REPORT.md)
+**Purpose**: Path verification and documentation cleanup report
+**Content**:
+- Web app paths verification (template_folder, DATA_DIR)
+- Documentation reorganization (4 new folders)
+- Waste files removal (8 files deleted)
+- File consolidation and organization
+- System health status verification
+**Size**: 7,808 bytes | **Use**: System maintenance & organization
+
+#### 📊 [CSV_DATA_UPDATE_REPORT.md](CSV_DATA_UPDATE_REPORT.md)
+**Purpose**: CSV data update and system integration report
+**Content**:
+- Updated CSV file structure and analysis
+- Web app filename corrections applied
+- API endpoint integration updates
+- Data quality improvements and validation
+- System performance metrics
+**Size**: 8,234 bytes | **Use**: Data integration & system updates
 
 ---
 
