@@ -57,30 +57,8 @@ def get_flood_data():
                     else:
                         df.loc[df.index[i], 'risk_level'] = 'Low'
         
-        # Get recent flood predictions with proper ISO 8601 timestamps
+        # Get recent flood predictions
         recent_floods = df.tail(10).to_dict('records')
-        
-        # Ensure proper ISO 8601 timestamps and all required fields for each record
-        for i, record in enumerate(recent_floods):
-            # Convert timestamp to ISO 8601 UTC format
-            if 'timestamp' in record and record['timestamp']:
-                try:
-                    ts = pd.to_datetime(record['timestamp'])
-                    record['timestamp'] = ts.isoformat() + 'Z'
-                except:
-                    # Fallback to current time if conversion fails
-                    record['timestamp'] = datetime.now().isoformat() + 'Z'
-            else:
-                # Ensure timestamp exists
-                record['timestamp'] = datetime.now().isoformat() + 'Z'
-            
-            # Ensure all required fields are present
-            record['flood_risk_percentage'] = record.get('risk_percentage', 15.0)
-            record['risk_level'] = record.get('risk_level', 'Low')
-            record['time_to_flood_hours'] = record.get('time_to_flood_hours', 24.0)
-            record['confidence_score'] = record.get('confidence_score', 0.85)
-            record['location'] = record.get('location_name', 'Unknown Location')
-            record['explainability_features'] = record.get('feature_importance', {})
         
         # Calculate statistics
         total_floods = len(df)
@@ -114,32 +92,8 @@ def get_ship_data():
     """API endpoint for ship emergency data"""
     try:
         df = pd.read_csv(f"{DATA_DIR}/ship_emergenices.csv")
-        # Get recent ship data with all required fields
+        # Get recent ship data
         recent_ships = df.tail(10).to_dict('records')
-        
-        # Ensure all required fields are present for each record
-        for record in recent_ships:
-            # Convert timestamp to ISO 8601 UTC format
-            if 'timestamp' in record and record['timestamp']:
-                try:
-                    ts = pd.to_datetime(record['timestamp'])
-                    record['timestamp'] = ts.isoformat() + 'Z'
-                except:
-                    record['timestamp'] = datetime.now().isoformat() + 'Z'
-            else:
-                record['timestamp'] = datetime.now().isoformat() + 'Z'
-            
-            # Ensure all required fields are present
-            record['ship_id'] = record.get('mmsi', 'Unknown')
-            record['latitude'] = record.get('latitude', 0.0)
-            record['longitude'] = record.get('longitude', 0.0)
-            record['speed'] = record.get('speed_knots', 0.0)
-            record['heading'] = record.get('heading_degrees', 0.0)
-            record['anomaly_type'] = record.get('anomaly_type', 'None')
-            record['emergency_status'] = record.get('emergency_status', 'Normal')
-            record['anomaly_score'] = record.get('anomaly_score', 0.0)
-            record['confidence_score'] = record.get('confidence_score', 0.85)
-        
         # Calculate statistics
         total_ships = len(df)
         emergency_count = len(df[df['emergency_status'] == 'Alert'])
@@ -169,28 +123,8 @@ def get_spill_data():
     """API endpoint for spill detection data"""
     try:
         df = pd.read_csv(f"{DATA_DIR}/spill_detections.csv")
-        # Get recent spill detections with all required fields
+        # Get recent spill detections
         recent_spills = df.tail(10).to_dict('records')
-        
-        # Ensure all required fields are present for each record
-        for record in recent_spills:
-            # Convert timestamp to ISO 8601 UTC format
-            if 'timestamp' in record and record['timestamp']:
-                try:
-                    ts = pd.to_datetime(record['timestamp'])
-                    record['timestamp'] = ts.isoformat() + 'Z'
-                except:
-                    record['timestamp'] = datetime.now().isoformat() + 'Z'
-            else:
-                record['timestamp'] = datetime.now().isoformat() + 'Z'
-            
-            # Ensure all required fields are present
-            record['spill_detected'] = record.get('spill_detected', False)
-            record['severity'] = record.get('severity_level', 'Low')
-            record['affected_area_km2'] = record.get('affected_area_km2', 0.0)
-            record['confidence_score'] = record.get('confidence_score', 0.90)
-            record['location'] = record.get('location_name', 'Unknown Location')
-        
         # Calculate statistics
         total_spills = len(df)
         detected_spills = len(df[df['spill_detected'] == True])
@@ -229,69 +163,13 @@ def get_alerts():
     """API endpoint for system alerts"""
     try:
         df = pd.read_csv(f"{DATA_DIR}/alerts.csv")
-        
-        # Check for alert conditions
-        flood_df = pd.read_csv(f"{DATA_DIR}/flood_predicitions.csv")
-        ship_df = pd.read_csv(f"{DATA_DIR}/ship_emergenices.csv")
-        spill_df = pd.read_csv(f"{DATA_DIR}/spill_detections.csv")
-        
-        # Trigger alerts based on actual conditions
-        alert_conditions = []
-        
-        # Check for flood risk > 70%
-        high_flood_risk = len(flood_df[flood_df['risk_percentage'] > 70]) > 0
-        if high_flood_risk:
-            alert_conditions.append({
-                'alert_type': 'Flood Risk',
-                'level': 'High',
-                'title': 'High Flood Risk Detected',
-                'message': f'Flood risk exceeded 70% threshold. Immediate attention required.',
-                'location': 'Multiple locations',
-                'reason': 'Risk threshold exceeded'
-            })
-        
-        # Check for ship emergencies
-        ship_emergencies = len(ship_df[ship_df['emergency_status'] == 'Alert']) > 0
-        if ship_emergencies:
-            alert_conditions.append({
-                'alert_type': 'Ship Emergency',
-                'level': 'Medium',
-                'title': 'Ship Emergency Detected',
-                'message': 'Ship emergency detected via anomaly analysis.',
-                'location': 'Maritime routes',
-                'reason': 'Anomaly-based emergency detection'
-            })
-        
-        # Check for oil spills
-        oil_spills = len(spill_df[spill_df['spill_detected'] == True]) > 0
-        if oil_spills:
-            alert_conditions.append({
-                'alert_type': 'Oil Spill',
-                'level': 'High',
-                'title': 'Oil Spill Detected',
-                'message': 'Oil spill detected by satellite monitoring.',
-                'location': 'Coastal waters',
-                'reason': 'Satellite detection confirmed'
-            })
-        
-        # Get active alerts from CSV if no conditions met, otherwise use generated alerts
-        if len(alert_conditions) > 0:
-            active_alerts = alert_conditions
-        else:
-            # Use existing alerts from CSV
-            active_alerts = df[df['status'] == 'active'].tail(10).to_dict('records')
+        # Get active alerts
+        active_alerts = df[df['status'] == 'active'].tail(10).to_dict('records')
         
         # Add AI explanations and action buttons to alerts
         enhanced_alerts = []
         for alert in active_alerts:
             enhanced_alert = alert.copy()
-            
-            # Ensure all required fields are present
-            enhanced_alert['timestamp'] = datetime.now().isoformat() + 'Z'
-            enhanced_alert['alert_type'] = alert.get('alert_type', 'System Alert')
-            enhanced_alert['severity'] = alert.get('level', 'Medium')
-            enhanced_alert['location'] = alert.get('location', 'Unknown')
-            enhanced_alert['reason'] = alert.get('reason', 'System check')
             
             # Generate realistic confidence based on alert level
             def generate_realistic_confidence(risk_level):
@@ -299,7 +177,7 @@ def get_alerts():
                     return round(90 + (random.random() - 0.5) * 10, 1)  # 85-95%
                 elif risk_level.lower() == 'medium':
                     return round(77.5 + (random.random() - 0.5) * 15, 1)  # 70-85%
-                elif risk_level.lower() in ['high', 'severe']:
+                elif risk_level.lower() == 'high':
                     return round(67.5 + (random.random() - 0.5) * 15, 1)  # 60-75%
                 else:
                     return round(85 + (random.random() - 0.5) * 10, 1)
@@ -405,9 +283,6 @@ def get_kpi_summary():
         current_flood_risk = 15.0  # Set to realistic medium risk (15%)
         flood_risk_level = 'Medium' if current_flood_risk >= 10 else 'Low'
         
-        # Add context for realistic demo scale
-        total_monitored_vessels = min(len(ship_df['mmsi'].unique()), 12)  # Cap at 12 for demo
-        
         kpis = {
             'flood_risk': {
                 'current': current_flood_risk,
@@ -416,9 +291,8 @@ def get_kpi_summary():
             },
             'ship_emergencies': {
                 'active': int(len(ship_df[ship_df['emergency_status'] == 'Alert'])),
-                'total_monitored': int(total_monitored_vessels),
-                'anomaly_rate': float(len(ship_df[ship_df['emergency_status'] == 'Alert']) / len(ship_df) * 100) if not ship_df.empty else 0,
-                'context': 'Simulated regional monitoring dataset'
+                'total_monitored': int(len(ship_df['mmsi'].unique())),
+                'anomaly_rate': float(len(ship_df[ship_df['emergency_status'] == 'Alert']) / len(ship_df) * 100) if not ship_df.empty else 0
             },
             'spill_detections': {
                 'active': int(len(spill_df[spill_df['spill_detected'] == True])),
@@ -451,34 +325,32 @@ def get_kpi_summary():
 @app.route('/api/health')
 def health_check():
     """Health check endpoint for Azure App Service"""
-    try:
-        import random
-
-        # Simulate realistic system status
-        data_sources = random.randint(4, 6)  # 4-6 active data sources
-        last_sync = datetime.now()
-
-        return jsonify({
-            'status': 'healthy',
-            'timestamp': datetime.now().isoformat(),
-            'version': '1.0.0',
-            'service': 'AquaGuard AI Web Frontend',
-            'system_info': {
-                'status': 'System Online',
-                'last_sync': last_sync.strftime('%I:%M:%S %p'),
-                'data_sources': str(data_sources) + ' active',
-                'uptime': '24/7',
-                'response_time_ms': random.randint(45, 120),  # Realistic response time
-                'api_health': 'All systems operational'
-            }
-        })
-    except Exception as e:
-        logger.error("Error in health check: " + str(e))
-        return jsonify({'success': False, 'error': str(e)})
+    import random
+    
+    # Simulate realistic system status
+    data_sources = random.randint(4, 6)  # 4-6 active data sources
+    last_sync = datetime.now()
+    
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'version': '1.0.0',
+        'service': 'AquaGuard AI Web Frontend',
+        'system_info': {
+            'status': 'System Online',
+            'last_sync': last_sync.strftime('%I:%M:%S %p'),
+            'data_sources': f'{data_sources} active',
+            'uptime': '24/7',
+            'response_time_ms': random.randint(45, 120),  # Realistic response time
+            'api_health': 'All systems operational'
+        }
+    })
 
 @app.route('/api/map-data')
 def get_map_data():
+    """API endpoint for map visualization data"""
     try:
+        # Load recent data for map visualization
         flood_df = pd.read_csv(f"{DATA_DIR}/flood_predicitions.csv")
         ship_df = pd.read_csv(f"{DATA_DIR}/ship_emergenices.csv")
         spill_df = pd.read_csv(f"{DATA_DIR}/spill_detections.csv")
@@ -537,7 +409,7 @@ def get_map_data():
             'timestamp': datetime.now().isoformat()
         })
     except Exception as e:
-        logger.error("Error loading map data: " + str(e) + "'")
+        logger.error(f"Error loading map data: {str(e)}")
         return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/api/performance-metrics')
@@ -593,7 +465,7 @@ def get_performance_metrics():
             'timestamp': datetime.now().isoformat()
         })
     except Exception as e:
-        logger.error("Error calculating performance metrics: " + str(e) + "'")
+        logger.error(f"Error calculating performance metrics: {str(e)}")
         return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == '__main__':

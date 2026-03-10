@@ -2,7 +2,7 @@
 AquaGuard AI - Unified Flood, Ocean & Maritime Emergency Intelligence System
 Main Orchestrator for Imagine Cup MVP
 
-This module coordinates all AI modules and manages data flow for demo.
+This module coordinates all AI modules and manages data flow for the demo.
 """
 
 import os
@@ -13,15 +13,33 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any
 import asyncio
 import pandas as pd
-import random
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import our custom modules
+from modules.flood_prediction import FloodPredictor
+from modules.ship_emergency import ShipEmergencyDetector
+from modules.oil_spill_detection import OilSpillDetector
+from modules.digital_twin import DigitalTwinSimulator
+from modules.alert_system import AlertManager
+from modules.data_generator import DataSimulator
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 class AquaGuardAI:
     """Main orchestrator for AquaGuard AI system"""
     
     def __init__(self):
+        self.flood_predictor = FloodPredictor()
+        self.ship_detector = ShipEmergencyDetector()
+        self.spill_detector = OilSpillDetector()
+        self.digital_twin = DigitalTwinSimulator()
+        self.alert_manager = AlertManager()
+        self.data_simulator = DataSimulator()
+        
         # Initialize data storage
         self.current_data = {
             'flood_data': [],
@@ -30,86 +48,67 @@ class AquaGuardAI:
             'alerts': []
         }
         
-    def generate_flood_data(self):
-        """Generate realistic flood prediction data"""
-        locations = ['Tokyo Bay', 'Yokohama Port', 'Shibuya', 'Shinagawa', 'Chiba Coast']
-        data = []
-        for i in range(10):
-            data.append({
-                'location': locations[i % len(locations)],
-                'timestamp': datetime.now().isoformat(),
-                'rainfall_mm': round(random.uniform(5, 50), 1),
-                'river_level_m': round(random.uniform(1, 5), 1),
-                'soil_moisture': round(random.uniform(20, 80), 1),
-                'risk_percentage': round(random.uniform(5, 25), 1),
-                'time_to_flood_hours': round(random.uniform(6, 24), 1),
-                'confidence_score': round(random.uniform(85, 95), 1)
-            })
-        return data
+        logger.info("AquaGuard AI System Initialized")
     
-    def generate_ship_data(self):
-        """Generate realistic ship emergency data"""
-        ships = ['Cargo Vessel Alpha', 'Tanker Beta', 'Container Ship Gamma']
-        data = []
-        for i in range(5):
-            data.append({
-                'ship_id': f'SHIP-{1000+i}',
-                'ship_name': ships[i % len(ships)],
-                'timestamp': datetime.now().isoformat(),
-                'latitude': round(random.uniform(35.4, 35.8), 6),
-                'longitude': round(random.uniform(139.5, 140.2), 6),
-                'speed_knots': round(random.uniform(5, 20), 1),
-                'heading': round(random.uniform(0, 360), 1),
-                'emergency_status': 'Normal' if random.random() > 0.7 else 'Emergency',
-                'anomaly_score': round(random.uniform(0, 1), 2),
-                'confidence_score': round(random.uniform(85, 95), 1)
-            })
-        return data
-    
-    def generate_spill_data(self):
-        """Generate realistic oil spill detection data"""
-        data = []
-        for i in range(5):
-            data.append({
-                'location': f'Location-{i+1}',
-                'timestamp': datetime.now().isoformat(),
-                'spill_detected': random.random() > 0.8,
-                'spill_type': 'Oil' if random.random() > 0.5 else 'Chemical',
-                'severity_level': random.choice(['Low', 'Medium', 'High']),
-                'affected_area_km2': round(random.uniform(0.1, 5.0), 2),
-                'confidence_score': round(random.uniform(85, 95), 1)
-            })
-        return data
-    
-    def get_highest_flood_risk(self) -> str:
-        """Get highest current flood risk level"""
-        flood_data = self.current_data.get('flood_data', [])
-        if not flood_data:
-            return 'Low'
-        
-        # Convert to list of risk percentages
-        risk_values = [item.get('risk_percentage', 0) for item in flood_data]
-        if not risk_values:
-            return 'Low'
+    async def run_simulation_cycle(self):
+        """Run one complete simulation cycle"""
+        try:
+            # 1. Generate simulated data
+            logger.info("Generating simulated data...")
+            flood_data = self.data_simulator.generate_flood_data()
+            ship_data = self.data_simulator.generate_ship_data()
+            spill_images = self.data_simulator.generate_spill_scenarios()
             
-        highest_risk = max(risk_values)
-        if highest_risk >= 70:
-            return 'High'
-        elif highest_risk >= 40:
-            return 'Medium'
-        else:
-            return 'Low'
-    
-    def get_current_status(self) -> Dict[str, Any]:
-        """Get current system status for dashboard"""
-        return {
-            'system_status': 'Active',
-            'last_update': self.current_data.get('timestamp'),
-            'active_alerts': len([a for a in self.current_data.get('alerts', []) if a.get('status') == 'active']),
-            'flood_risk_level': self.get_highest_flood_risk(),
-            'ship_emergencies': len([s for s in self.current_data.get('ship_data', []) if s.get('emergency_status') == 'Emergency']),
-            'active_spills': len([s for s in self.current_data.get('spill_data', []) if s.get('spill_detected')]),
-        }
+            # 2. Process data through AI modules
+            logger.info("Processing data through AI modules...")
+            
+            # Flood Prediction
+            flood_predictions = []
+            for data_point in flood_data:
+                prediction = self.flood_predictor.predict_flood_risk(data_point)
+                flood_predictions.append(prediction)
+            
+            # Ship Emergency Detection
+            ship_emergencies = []
+            for ship in ship_data:
+                emergency = self.ship_detector.detect_emergency(ship)
+                ship_emergencies.append(emergency)
+            
+            # Oil Spill Detection
+            spill_detections = []
+            for image_path, metadata in spill_images:
+                detection = self.spill_detector.detect_spill(image_path, metadata)
+                spill_detections.append(detection)
+            
+            # 3. Update Digital Twin
+            logger.info("Updating Digital Twin simulation...")
+            twin_state = self.digital_twin.update_state(
+                flood_predictions, ship_emergencies, spill_detections
+            )
+            
+            # 4. Check for alerts
+            logger.info("Checking for alerts...")
+            new_alerts = self.alert_manager.check_alerts(
+                flood_predictions, ship_emergencies, spill_detections
+            )
+            
+            # 5. Store current data
+            self.current_data = {
+                'flood_data': flood_predictions,
+                'ship_data': ship_emergencies,
+                'spill_data': spill_detections,
+                'alerts': new_alerts,
+                'digital_twin': twin_state,
+                'timestamp': datetime.now().isoformat()
+            }
+            
+            # 6. Export data for Power BI
+            self.export_data_for_powerbi()
+            
+            logger.info(f"Simulation cycle completed. Generated {len(new_alerts)} alerts")
+            
+        except Exception as e:
+            logger.error(f"Error in simulation cycle: {str(e)}")
     
     def export_data_for_powerbi(self):
         """Export current data to CSV files for Power BI"""
@@ -143,97 +142,48 @@ class AquaGuardAI:
         
         logger.info(f"Data exported to {output_dir} for Power BI")
     
-    async def run_simulation_cycle(self):
-        """Run one complete simulation cycle"""
-        try:
-            # 1. Generate simulated data
-            logger.info("Generating simulated data...")
-            flood_data = self.generate_flood_data()
-            ship_data = self.generate_ship_data()
-            spill_data = self.generate_spill_data()
-            
-            # 2. Store current data
-            self.current_data = {
-                'flood_data': flood_data,
-                'ship_data': ship_data,
-                'spill_data': spill_data,
-                'alerts': [],
-                'digital_twin': {
-                    'timestamp': datetime.now().isoformat(),
-                    'system_status': 'Active',
-                    'data_sources': '5 active',
-                    'uptime': '24/7'
-                }
-            }
-            
-            # 3. Check for alerts
-            logger.info("Checking for alerts...")
-            new_alerts = []
-            
-            # Simple alert logic
-            if flood_data and any(item['risk_percentage'] > 70 for item in flood_data):
-                new_alerts.append({
-                    'alert_type': 'Flood Risk',
-                    'level': 'High',
-                    'title': 'High Flood Risk Detected',
-                    'message': 'Flood risk exceeded 70% threshold.',
-                    'location': 'Multiple locations',
-                    'reason': 'Risk threshold exceeded',
-                    'status': 'active',
-                    'timestamp': datetime.now().isoformat()
-                })
-            
-            if ship_data and any(item['emergency_status'] == 'Emergency' for item in ship_data):
-                new_alerts.append({
-                    'alert_type': 'Ship Emergency',
-                    'level': 'Medium',
-                    'title': 'Ship Emergency Detected',
-                    'message': 'Ship emergency detected.',
-                    'location': 'Maritime routes',
-                    'reason': 'Emergency status detected',
-                    'status': 'active',
-                    'timestamp': datetime.now().isoformat()
-                })
-            
-            if spill_data and any(item['spill_detected'] for item in spill_data):
-                new_alerts.append({
-                    'alert_type': 'Oil Spill',
-                    'level': 'High',
-                    'title': 'Oil Spill Detected',
-                    'message': 'Oil spill detected.',
-                    'location': 'Coastal waters',
-                    'reason': 'Spill detected',
-                    'status': 'active',
-                    'timestamp': datetime.now().isoformat()
-                })
-            
-            self.current_data['alerts'] = new_alerts
-            
-            # 4. Export data for Power BI
-            self.export_data_for_powerbi()
-            
-            logger.info(f"Simulation cycle completed. Generated {len(new_alerts)} alerts")
-            
-        except Exception as e:
-            logger.error(f"Error in simulation cycle: {str(e)}")
+    def get_current_status(self) -> Dict[str, Any]:
+        """Get current system status for dashboard"""
+        return {
+            'system_status': 'Active',
+            'last_update': self.current_data.get('timestamp'),
+            'active_alerts': len([a for a in self.current_data.get('alerts', []) if a['status'] == 'active']),
+            'flood_risk_level': self.get_highest_flood_risk(),
+            'ship_emergencies': len([s for s in self.current_data.get('ship_data', []) if s['emergency_status'] == 'Emergency']),
+            'active_spills': len([s for s in self.current_data.get('spill_data', []) if s['spill_detected']]),
+        }
     
-    async def main():
-        """Main function to run AquaGuard AI system"""
-        aquaguard = AquaGuardAI()
+    def get_highest_flood_risk(self) -> str:
+        """Get highest current flood risk level"""
+        flood_data = self.current_data.get('flood_data', [])
+        if not flood_data:
+            return 'Low'
         
-        logger.info("Starting AquaGuard AI Simulation...")
-        logger.info("Press Ctrl+C to stop simulation")
-        
-        try:
-            while True:
-                await aquaguard.run_simulation_cycle()
-                # Wait for next cycle (configurable interval)
-                await asyncio.sleep(60)  # Run every minute for demo
+        highest_risk = max([f['risk_percentage'] for f in flood_data])
+        if highest_risk >= 70:
+            return 'High'
+        elif highest_risk >= 40:
+            return 'Medium'
+        else:
+            return 'Low'
+
+async def main():
+    """Main function to run the AquaGuard AI system"""
+    aquaguard = AquaGuardAI()
+    
+    logger.info("Starting AquaGuard AI Simulation...")
+    logger.info("Press Ctrl+C to stop simulation")
+    
+    try:
+        while True:
+            await aquaguard.run_simulation_cycle()
+            # Wait for next cycle (configurable interval)
+            await asyncio.sleep(60)  # Run every minute for demo
             
-        except KeyboardInterrupt:
-            logger.info("Simulation stopped by user")
-        except Exception as e:
-            logger.error(f"Unexpected error: {str(e)}")
+    except KeyboardInterrupt:
+        logger.info("Simulation stopped by user")
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
 
 if __name__ == "__main__":
     asyncio.run(main())
